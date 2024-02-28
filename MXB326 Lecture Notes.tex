@@ -1,0 +1,222 @@
+%!TEX TS-program = xelatex
+%!TEX options = -aux-directory=Debug -shell-escape -file-line-error -interaction=nonstopmode -halt-on-error -synctex=1 "%DOC%"
+\documentclass{article}
+\input{LaTeX-Submodule/template.tex}
+
+% Additional packages & macros
+
+% Header and footer
+\newcommand{\unitName}{Computational Mathematics 2}
+\newcommand{\unitTime}{Semester 1, 2024}
+\newcommand{\unitCoordinator}{Dr Elliot Carr}
+\newcommand{\documentAuthors}{Tarang Janawalkar}
+
+\fancyhead[L]{\unitName}
+\fancyhead[R]{\leftmark}
+\fancyfoot[C]{\thepage}
+
+% Copyright
+\usepackage[
+    type={CC},
+    modifier={by-nc-sa},
+    version={4.0},
+    imagewidth={5em},
+    hyphenation={raggedright}
+]{doclicense}
+
+\date{}
+
+\begin{document}
+%
+\begin{titlepage}
+    \vspace*{\fill}
+    \begin{center}
+        \LARGE{\textbf{\unitName}} \\[0.1in]
+        \normalsize{\unitTime} \\[0.2in]
+        \normalsize\textit{\unitCoordinator} \\[0.2in]
+        \documentAuthors
+    \end{center}
+    \vspace*{\fill}
+    \doclicenseThis
+    \thispagestyle{empty}
+\end{titlepage}
+\newpage
+%
+\tableofcontents
+\newpage
+%
+\section{Finite Volume Methods}
+\subsection{Transport Phenomena}
+Transport phenomena broadly comprises three disciplines; fluid
+dynamics, heat transfer, and mass transfer.\ \textbf{Fluid dynamics} is
+the study of the motion of fluids, including liquids and gases.\
+\textbf{Heat transfer} is the study of how heat (thermal energy) is
+transported, generated, dissipated, and/or converted in a physical
+system.\ \textbf{Mass transfer} is the study of the movement of mass
+from one location to another.
+
+The mathematical equations used to describe the above phenomena involve
+three fundamental mechanisms of transport:
+\begin{enumerate}
+    \item Diffusion
+    \item Advection
+    \item Reaction
+\end{enumerate}
+\subsubsection{Diffusion}
+\textit{Diffusion} is the gradual movement of a substance from regions of high
+concentration to regions of low concentration. The direction of
+diffusion is determined by the sign of the negative gradient of the
+concentration.
+\subsubsection{Advection}
+\textit{Advection} is the transport of a substance by bulk motion of a fluid.
+Advection is driven by a vector field in which the substance is
+transported.
+\subsubsection{Reaction}
+Reaction is the process in which substances are created or destroyed.
+Reaction is represented as a source or sink function.
+\subsection{Transport Equation}
+The general form of the transport equation is given by
+\begin{equation*}
+    \underbrace{\pdv{u}{t}}_{\text{unsteady term}} + \underbrace{\symbf{\nabla} \cdot \left( \symbf{v} u \right) \vphantom{\pdv{u}{t}}}_{\text{advection term}} = \underbrace{\symbf{\nabla} \cdot \left( \symbf{D} \symbf{\nabla} u \right) \vphantom{\pdv{u}{t}}}_{\text{diffusion term}} + \underbrace{R \vphantom{\pdv{u}{t}}}_{\text{reaction term}}
+\end{equation*}
+where \(u\left( \symbf{x},\: t \right)\) is the quantity being transported
+at position \(\symbf{x}\) and time \(t\), \(\symbf{v}\left( \symbf{x},\: t \right) \in \R^n\)
+is a velocity vector field which drives \(u\),
+\(\symbf{D} \in \R^{n \times n}\) is the diffusion matrix, and \(R\) is
+a reaction term.\ \(n\) represents the dimension of the spatial domain
+of the problem, which can be 1, 2, or 3.
+
+An alternative form of the transport equation combines the divergence
+terms
+\begin{equation*}
+    \underbrace{\pdv{u}{t} \vphantom{\pdv{u}{t}}}_{\text{unsteady term}} + \underbrace{\symbf{\nabla} \cdot \symbf{q} \vphantom{\pdv{u}{t}}}_{\text{flux term}} = \underbrace{R \vphantom{\pdv{u}{t}}}_{\text{reaction term}}
+\end{equation*}
+where \(\symbf{q} = \symbf{v} u - \symbf{D} \symbf{\nabla} u\) is the
+\textit{flux vector}.
+\subsubsection{Domain}
+This PDE is defined on a specified domain \(\Omega\) which is an open
+connected subset of \(\R^n\), with the boundary \(\partial \Omega\).
+\subsubsection{Derivation}
+The transport equation can be derived from the conservation of mass
+principle: the rate of change of the quantity \(u\) within a region
+\(D\) must be balanced by the net flow of \(u\) in/out of the boundary
+\(\partial{D}\) of \(D\), and the rate of creation or destruction of
+\(u\) within \(D\). Consider an arbitrarily small sub-domain \(D\) of
+\(\Omega\) with boundary \(\partial D\), then:
+\begin{align*}
+    \biggl\{ \parbox[c]{2.5cm}{\centering Rate of change                                                                                                          \\ of \(u\) in \(D\)} \biggr\} & =
+    -\biggl\{ \parbox[c]{2cm}{\centering \(u\) leaving \(D\)                                                                                                      \\ across \(\partial{D}\)} \biggr\}
+    + \biggl\{ \parbox[c]{4cm}{\centering Generation/Destruction                                                                                                  \\of \(u\) within \(D\)} \biggr\} \\
+    \odv{}{t} \int_D u \odif{V}                                                    & = -\int_{\partial{D}} \symbf{q} \cdot \symbf{n} \odif{s} + \int_D R \odif{V} \\
+    \int_D \pdv{u}{t} \odif{V}                                                     & = -\int_{D} \symbf{\nabla} \cdot \symbf{q} \odif{V} + \int_D R \odif{V}      \\
+    \int_D \left( \pdv{u}{t} + \symbf{\nabla} \cdot \symbf{q} - R \right) \odif{V} & = 0                                                                          \\
+    \pdv{u}{t} + \symbf{\nabla} \cdot \symbf{q}                                    & = R.
+\end{align*}
+\subsection{Special Cases}
+\subsubsection{One Spatial Dimension}
+In one spatial dimension, the transport equation reduces to
+\begin{equation*}
+    \pdv{u}{t} + \pdv{}{x} \left( v u \right) = \pdv{}{x} \left( D \pdv{u}{x} \right) + R.
+\end{equation*}
+where \(u\left( x,\: t \right)\) is a function of one spatial dimension
+and time, \(v\) is the velocity, and \(D > 0\) is the diffusivity.
+\subsubsection{Two Spatial Dimensions}
+In two spatial dimensions, the transport equation reduces to
+\begin{equation*}
+    \pdv{u}{t} + \pdv{}{x} \left( v_x u \right) + \pdv{}{y} \left( v_y u \right) = \pdv{}{x} \left( D_{xx} \pdv{u}{x} \right) + \pdv{}{y} \left( D_{yy} \pdv{u}{y} \right) + R.
+\end{equation*}
+where \(u\left( x,\: y,\: t \right)\) is a function of two spatial
+dimensions and time, \(v_x\) and \(v_y\) are the velocities in the \(x\)
+and \(y\) directions, and \(D_{xx}\) and \(D_{yy}\) are the diffusivities
+in the \(x\) and \(y\) directions.
+\subsubsection{Eliminating Terms}
+The transport equation is also called the
+\textit{advection-diffusion-reaction equation}.
+\begin{itemize}
+    \item If the \textit{velocity term} \(\symbf{v}\) is the zero
+          vector, the equation reduces to the
+          \textit{diffusion-reaction equation}.
+    \item If the \textit{diffusion term} \(\symbf{D}\) is the zero
+          matrix, the equation reduces to the
+          \textit{advection-reaction equation}.
+    \item If the \textit{reaction term} \(R\) is zero, the equation
+          reduces to the \textit{advection-diffusion equation}.
+\end{itemize}
+\subsection{Classification}
+While the terms in the transport equation may be constant or variable,
+certain combinations of these terms lead to different solution methods.
+\begin{itemize}
+    \item The velocity vector \(\symbf{v}\) may be a constant vector or
+          a function of space \(\symbf{x}\), time \(t\), and/or the
+          solution \(u\).
+    \item The diffusion matrix \(\symbf{D}\) may be a constant matrix
+          or a function of space \(\symbf{x}\), time \(t\), and/or the
+          solution \(u\).
+    \item The reaction term \(R\) may be a constant or a function of
+          space \(\symbf{x}\), time \(t\), and/or the solution \(u\).
+\end{itemize}
+When \(\symbf{v}\) and \(\symbf{D}\) are \underline{not} functions of \(u\), and
+\(R\) is a \underline{linear} function of \(u\), the transport equation is
+called \textit{linear}. The equation is \textit{nonlinear} otherwise.
+The domain \(\Omega\) is called \textit{heterogeneous} if any of the
+coefficients \(\symbf{v}\), \(\symbf{D}\), or \(R\) are functions of
+space \(\symbf{x}\), and \textit{homogeneous} otherwise.
+\subsection{Dimensional Analysis}
+Performing a dimensional analysis on the transport equation allows us
+to associate physical units with the coefficients of the equation. This
+analysis is useful for verifying the correctness of the equation and
+for scaling the equation to a dimensionless form. The terms in the
+equation
+\begin{equation*}
+    \pdv{u}{t} + \symbf{\nabla} \cdot \left( \symbf{v} u \right) = \symbf{\nabla} \cdot \left( \symbf{D} \symbf{\nabla} u \right) + R
+\end{equation*}
+may only be added or subtracted if they have the same units. Therefore,
+given that
+\begin{equation*}
+    \left[ \pdv{u}{t} \right] \equiv \frac{\left[ u \right]}{\left[ t \right]} = \frac{\left[ u \right]}{\mathsf{T}}
+\end{equation*}
+we can deduce the units of other terms in the equation.
+\begin{align*}
+    \left[ \symbf{\nabla} \cdot \left( \symbf{v} u \right) \right] \equiv \frac{\left[ \symbf{v} \right] \left[ u \right]}{\left[ x \right]} = \frac{\left[ u \right]}{\mathsf{T}}                                                                                                        & \implies \left[ \symbf{v} \right] = \frac{\mathsf{L}}{\mathsf{T}}   \\
+    \left[ \symbf{\nabla} \cdot \left( \symbf{D} \symbf{\nabla} u \right) \right] \equiv \frac{\left[ \symbf{D} \right] \left[ \symbf{\nabla} u \right]}{\left[ x \right]} = \frac{\left[ \symbf{D} \right] \left[ u \right]}{{\left[ x \right]}^2} = \frac{\left[ u \right]}{\mathsf{T}} & \implies \left[ \symbf{D} \right] = \frac{\mathsf{L}^2}{\mathsf{T}} \\
+    \left[ R \right] \equiv \frac{\left[ u \right]}{\left[ t \right]}                                                                                                                                                                                                                     & \implies \left[ R \right] = \frac{\left[ u \right]}{\mathsf{T}}
+\end{align*}
+\subsection{Initial and Boundary Conditions}
+In addition to the transport equation, which describes the behaviour of
+\(u\) within the domain \(\Omega\), the problem must also specify how
+\(u\) behaves at the boundary \(\partial \Omega\) with \textit{boundary
+conditions}. Some common boundary conditions include:
+\begin{itemize}
+    \item Specified value: \(u\left( \symbf{x},\: t \right) = u_b\) on
+          \(\partial \Omega\)
+    \item Specified flux: \(\symbf{q} \cdot \symbf{n} = q_b\) on
+          \(\partial \Omega\)
+    \item Specified gradient: \(\symbf{\nabla} u \cdot \symbf{n} =
+          d_b\) on \(\partial \Omega\)
+\end{itemize}
+Here \(u_b\), \(q_b\), and \(d_b\) may be constants or scalar functions
+of \(\symbf{x}\) and/or \(t\), and \(\symbf{n}\) is the unit normal vector
+to \(\partial \Omega\), directed outward from \(\Omega\).
+
+We may also wish to use a Robin condition to describe a general boundary
+condition of the form:
+\begin{equation*}
+    a u + b \left( \symbf{\nabla} u \cdot \symbf{n} \right) = c
+\end{equation*}
+where \(a\), \(b\), and \(c\) are constants or scalar functions of
+\(\symbf{x}\) and/or \(t\). When \(c = 0\), the condition is called
+\textit{homogeneous}, and \textit{nonhomogeneous} otherwise.
+
+In addition to these conditions, an \textit{initial condition} is required to
+specify the profile of \(u\) at time \(t = 0\).
+\subsection{Steady-State Problems}
+If it exists, the \textit{steady-state solution} of the transport equation
+is the solution of the equation when the time-derivative of \(u\) is zero:
+\begin{equation*}
+    \pdv{u}{t} = 0.
+\end{equation*}
+The steady-state solution is useful for understanding the long-term
+behaviour of the system, where it is assumed that the system is no longer
+time-dependent. The steady-state solution is expressed as
+\(u_\infty = \lim_{t \to \infty} u\left( \symbf{x},\: t \right)\).
+\end{document}
