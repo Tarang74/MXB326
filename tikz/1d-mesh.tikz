@@ -1,0 +1,48 @@
+%!TEX TS-program = xelatex
+%!TEX options = -aux-directory=Debug -shell-escape -file-line-error -interaction=nonstopmode -halt-on-error -synctex=1 "%DOC%"
+\documentclass{standalone}
+
+\usepackage{unicode-math}
+\setmathfont{Latin Modern Math}
+\setmathfont{TeX Gyre Pagella Math}[range={bb,bbit}, Scale=MatchUppercase]
+
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{circuitikz}
+\pgfplotsset{compat=1.18}
+
+\usetikzlibrary{patterns,patterns.meta,shapes.misc,arrows.meta}
+
+\definecolor{grey}{RGB}{230,230,230}
+\definecolor{darkgrey}{RGB}{80,80,80}
+\definecolor{myblue}{RGB}{0,38,240}
+\definecolor{myred}{RGB}{240,38,0}
+
+\tikzset{
+    cross/.style={
+        cross out,
+        line width=0.6pt,
+        draw=red,
+        fill=none,
+        minimum size=3.5*(#1-\pgflinewidth),
+        inner sep=0pt,
+        outer sep=0pt
+    },
+    cross/.default={2pt}
+}
+
+\begin{document}
+\begin{tikzpicture}
+    % Domain
+    \draw[very thick] (0, 0) -- (8, 0);
+    \draw[dashed,green] (2, 0) -- (4, 0);
+    % Vertices
+    \foreach \i in {0, 2, 4, 6, 8} {
+        \fill[myblue] (\i, 0) circle (0.07);
+        \fill[white] (\i, 0) circle (0.05);
+    }
+    % Labels
+    \node[anchor=south] at (0, 0) {Vertex};
+    \node[anchor=south] at (3, 0) {Element};
+\end{tikzpicture}
+\end{document}

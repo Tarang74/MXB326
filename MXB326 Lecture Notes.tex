@@ -4,6 +4,7 @@
 \input{LaTeX-Submodule/template.tex}
 
 % Additional packages & macros
+\usepackage{subcaption}
 
 % Header and footer
 \newcommand{\unitName}{Computational Mathematics 2}
@@ -45,7 +46,7 @@
 \tableofcontents
 \newpage
 %
-\section{Finite Volume Methods}
+\section{The Transport Equation}
 \subsection{Transport Phenomena}
 Transport phenomena broadly comprises three disciplines; fluid
 dynamics, heat transfer, and mass transfer.\ \textbf{Fluid dynamics} is
@@ -198,8 +199,8 @@ Here \(u_b\), \(q_b\), and \(d_b\) may be constants or scalar functions
 of \(\symbf{x}\) and/or \(t\), and \(\symbf{n}\) is the unit normal vector
 to \(\partial \Omega\), directed outward from \(\Omega\).
 
-We may also wish to use a Robin condition to describe a general boundary
-condition of the form:
+We may also wish to use a Robin condition to describe a general
+boundary condition of the form:
 \begin{equation*}
     a u + b \left( \symbf{\nabla} u \cdot \symbf{n} \right) = c
 \end{equation*}
@@ -207,11 +208,12 @@ where \(a\), \(b\), and \(c\) are constants or scalar functions of
 \(\symbf{x}\) and/or \(t\). When \(c = 0\), the condition is called
 \textit{homogeneous}, and \textit{nonhomogeneous} otherwise.
 
-In addition to these conditions, an \textit{initial condition} is required to
-specify the profile of \(u\) at time \(t = 0\).
+In addition to these conditions, an \textit{initial condition} is
+required to specify the profile of \(u\) at time \(t = 0\).
 \subsection{Steady-State Problems}
-If it exists, the \textit{steady-state solution} of the transport equation
-is the solution of the equation when the time-derivative of \(u\) is zero:
+If it exists, the \textit{steady-state solution} of the transport
+equation is the solution of the equation when the time-derivative of
+\(u\) is zero:
 \begin{equation*}
     \pdv{u}{t} = 0.
 \end{equation*}
@@ -219,4 +221,209 @@ The steady-state solution is useful for understanding the long-term
 behaviour of the system, where it is assumed that the system is no longer
 time-dependent. The steady-state solution is expressed as
 \(u_\infty = \lim_{t \to \infty} u\left( \symbf{x},\: t \right)\).
+\section{Finite Volume Method}
+The \textit{Finite Volume Method} (FVM) is a method for solving the
+transport equation at discrete points (nodes) in space: \(u_i\left( t
+\right) \approx u\left( \symbf{x}_i,\: t \right)\) for \(i = 1,\: 2,\:
+\ldots,\: N\). FVM is a \textit{spatial discretisation} method that
+converts a spatially-continuous initial-boundary value problem to a
+satially-discrete initial-value problem.
+
+The FVM is used in transport phenomena because the approximate solution
+obeys the laws of conservation of mass and energy. This is generally
+not true for finite differences or finite element methods. FVM also has
+the advantage of being able to handle complex geometries and irregular
+grids.
+\subsection{Discretising the Domain}
+The basic geometric structure used in the FVM is called the
+\textbf{mesh}. A mesh is a partitioning of the domain \(\Omega\) into
+smaller sub-domains called \textbf{elements}. The intersection of edges
+in this mesh are called \textbf{vertices}. An example of a 1D mesh is
+shown below.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = 0.8\linewidth]{figures/1d-mesh.pdf}
+    \caption{1D mesh.} % \label{}
+\end{figure}
+In two and three dimensions, the mesh may be either \textit{structured}
+or \textit{unstructured} as shown below. Unstructured meshes typically
+consist of triangles (or tetrahedra in 3D).
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[height = 4cm]{figures/2d-structured-mesh.pdf}
+        \caption{2D structured mesh.} % \label{}
+    \end{subfigure}
+    %
+    \begin{subfigure}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[height = 4cm]{figures/2d-unstructured-mesh.pdf}
+        \caption{2D unstructured mesh.} % \label{}
+    \end{subfigure}
+\end{figure}
+The FVM defines:
+\begin{itemize}
+    \item \textbf{Nodes} \(\symbf{x}_i\), at which the solution is
+          approximated by \(u_i\)
+    \item \textbf{Control volumes} \(\Omega_i\), over which the
+          conservation principle is applied
+\end{itemize}
+where \(i = 1,\: 2,\: \ldots,\: N\) is the index of the nodes.
+There are several ways to define the control volumes. Two common
+approaches are:
+\begin{itemize}
+    \item \textbf{Cell-Centred Control Volumes}: Nodes are positioned
+          at the centroids of elements, and control volumes are defined over
+          elements.
+    \item \textbf{Vertex-Centred Control Volumes}: Nodes are positioned
+          at vertices, and control volumes are constructed using the centroids
+          of adjacent element boundaries.
+\end{itemize}
+This is illustrated in 1D and 2D in the following figures.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = 0.8\linewidth]{figures/1d-cell-centered.pdf}
+    \caption{1D mesh with cell-centred control volumes.} % \label{}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = 0.8\linewidth]{figures/1d-vertex-centered.pdf}
+    \caption{1D mesh with vertex-centred control volumes.} % \label{}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.45\linewidth}
+        \centering
+        \includegraphics[height = 4cm]{figures/2d-structured-nodes.pdf}
+        \caption{2D structured mesh with vertex-/cell- centred control volumes.} % \label{}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.45\linewidth}
+        \centering
+        \includegraphics[height = 4cm]{figures/2d-unstructured-nodes.pdf}
+        \caption{2D unstructured mesh with vertex-/cell- centred control volumes.} % \label{}
+    \end{subfigure}
+\end{figure}
+For problems in three dimensions using structured meshes, control
+volumes are cubes (or rectangular prisms). For unstructured meshes with
+control volumes using the cell-centred approach, elements themselves are
+used as control volumes. For the vertex-centred approach, control volume
+boundaries are defined using the centroids of adjacent element boundaries.
+\subsection{General Strategy}
+Consider a mesh with \(N\) nodes and \(N\) control volumes:
+\begin{enumerate}
+    \item Label the nodes \(x_1,\: x_2,\: \ldots,\: x_N\) and the
+          unknowns \(u_1,\: u_2,\: \ldots,\: u_N\).
+    \item Identify the control volume types (interior node, boundary
+          node).
+    \item Integrate the transport equation over each control volume and
+          apply the Divergence theorem to the flux term.
+    \item Incorporate the boundary conditions to approximate/discretise
+          all remaining terms.
+\end{enumerate}
+To discretise the transport equation, let us integrate the transport
+equation over each control volume \(\Omega_i\):
+\begin{align*}
+    \pdv{u}{t} + \symbf{\nabla} \cdot \symbf{q}                                                                  & = R                          \\
+    \int_{\Omega_i} \pdv{u}{t} \odif{V} + \int_{\Omega_i} \left( \symbf{\nabla} \cdot \symbf{q} \right) \odif{V} & = \int_{\Omega_i} R \odif{V}
+\end{align*}
+Applying the divergence theorem to the flux term, we have
+\begin{equation*}
+    \odv*{\int_{\Omega_i} u \odif{V}}{t} + \int_{\partial \Omega_i} \left( \symbf{q} \cdot \symbf{n} \right) \odif{s} = \int_{\Omega_i} R \odif{V}
+\end{equation*}
+where \(\partial \Omega_i\) is the control volume boundary of \(\Omega_i\),
+and \(\symbf{n}\) is the outward unit vector normal to \(\partial \Omega_i\),
+directed out of \(\Omega_i\). Consider the spatial average of \(u\) and
+\(R\) over \(\Omega_i\):
+\begin{equation*}
+    \bar{u}_i = \frac{1}{V_i} \int_{\Omega_i} u \odif{V}, \qquad \bar{R}_i = \frac{1}{V_i} \int_{\Omega_i} R \odif{V}
+\end{equation*}
+where \(V_i\) is the volume of \(\Omega_i\). Using this quantity, we can
+rewrite the transport equation as
+\begin{equation*}
+    \odv{\bar{u}_i}{t} + \frac{1}{V_i} \int_{\partial \Omega_i} \left( \symbf{q} \cdot \symbf{n} \right) \odif{s} = \bar{R}_i.
+\end{equation*}
+We can now approximate this ODE using the discrete approximations, \(u_i\)
+and \(R_i\), at each node \(\symbf{x}_i\).
+\begin{equation*}
+    \odv{u_i}{t} = - \frac{1}{V_i} \int_{\partial \Omega_i} \left( \symbf{q} \cdot \symbf{n} \right) \odif{s} + R_i
+\end{equation*}
+\subsection{FVM in 1D}
+Before we consider the 1D case for the FVM, let us define the following
+geometric quantities (for the vertex-centred control volume strategy):
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = \linewidth]{figures/1d-fvm.pdf}
+    \caption{1D FVM.} % \label{}
+\end{figure}
+where
+\begin{itemize}
+    \item \(\Omega = \ointerval{x_1}{x_N}\)
+    \item \(\Omega_i = \ointerval{w_i}{e_i}\) is the control volume for node \(i\)
+    \item \(h_i\) is the spacing between nodes \(i\) and \(i + 1\)
+          \begin{equation*}
+              h_i = x_{i+1} - x_i \quad \text{for \(i = 1,\: \ldots,\: N-1\)}
+          \end{equation*}
+    \item \(V_i\) is the volume of control volume \(\Omega_i\)
+          \begin{equation*}
+              V_i =
+              \begin{cases}
+                  \displaystyle \frac{h_1}{2},           & i = 1                       \\
+                  \displaystyle \frac{h_{i-1} + h_i}{2}, & 2 \leqslant i \leqslant N-1 \\
+                  \displaystyle \frac{h_{N-1}}{2},       & i = N
+              \end{cases}
+          \end{equation*}
+    \item \(w_i\) and \(e_i\) are the west and east boundaries of
+          control volume \(\Omega_i\)
+          \begin{align*}
+              w_i & =
+              \begin{cases}
+                  \displaystyle x_1,                     & i = 1                     \\
+                  \displaystyle \frac{x_{i-1} + x_i}{2}, & 2 \leqslant i \leqslant N
+              \end{cases}
+              \\
+              e_i & =
+              \begin{cases}
+                  \displaystyle \frac{x_i + x_{i+1}}{2}, & 1 \leqslant i \leqslant N-1 \\
+                  \displaystyle x_N,                     & i = N
+              \end{cases}
+          \end{align*}
+\end{itemize}
+Then, if we integrate over all control volumes \(\Omega_i\) in 1D, the
+spatial averages simplify to:
+\begin{equation*}
+    \bar{u}_i = \frac{1}{V_i} \int_{w_i}^{e_i} u \odif{x}, \qquad \bar{R}_i = \frac{1}{V_i} \int_{w_i}^{e_i} R \odif{x}
+\end{equation*}
+likewise, the flux term becomes,
+\begin{align*}
+    \int_{\Omega_i} \left( \symbf{\nabla} \cdot \symbf{q} \right) \odif{V} & = \int_{w_i}^{e_i} \pdv{q}{x} \odif{x} \\
+                                                                           & = q_{e_i} - q_{w_i}
+\end{align*}
+Then using the strategy outlined in the previous section, we find:
+\begin{equation*}
+    \odv{u_i}{t} = \frac{1}{V_i} \left( q_{w_i} - q_{e_i} \right) + R_i
+\end{equation*}
+where \(u_i \approx \bar{u}_i\) and \(R_i \approx \bar{R}_i\). This equation
+can now be used to solve an initial-boundary value problem using the FVM.
+
+Applying the finite-difference method at each node, we find a linear ODE
+of the form:
+\begin{equation*}
+    \odv{\symbf{u}}{t} = \symbf{A} \symbf{u} + \symbf{b}\left( t \right), \qquad \symbf{u}\left( 0 \right) = \symbf{u}^{\left( 0 \right)}
+\end{equation*}
+where \(\symbf{u} = {\left( u_1,\: \dots,\: u_N \right)}^\top\) is the
+numerical solution vector at time \(t\) containing the solution at each
+node \(x_i\) and \(\symbf{u}^{\left( 0 \right)} = {\left( f\left( x_1 \right),\: \dots,\: f\left( x_N \right) \right)}^\top\)
+is the initial solution vector.
+
+\(\symbf{A} \in \R^{N \times N}\) is a tridiagonal matrix containing
+the coefficients of the finite-difference method, and
+\(\symbf{b}\left( t \right)\) contains any time-dependent terms in the
+transport equation. This ODE can be solved using standard ODE solving
+techniques. When the transport equation is nonlinear, the RHS cannot
+be written as a matrix-vector product, but rather has the form
+\begin{equation*}
+    \symbf{b}\left( t \right) = \symbf{F}\left( t,\: \symbf{u}\left( t \right) \right).
+\end{equation*}
+
 \end{document}

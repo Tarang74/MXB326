@@ -1,0 +1,60 @@
+%!TEX TS-program = xelatex
+%!TEX options = -aux-directory=Debug -shell-escape -file-line-error -interaction=nonstopmode -halt-on-error -synctex=1 "%DOC%"
+\documentclass{standalone}
+
+\usepackage{unicode-math}
+\setmathfont{Latin Modern Math}
+\setmathfont{TeX Gyre Pagella Math}[range={bb,bbit}, Scale=MatchUppercase]
+
+\usepackage{calc}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{circuitikz}
+\pgfplotsset{compat=1.18}
+
+\usetikzlibrary{patterns,patterns.meta,shapes.misc,arrows.meta}
+
+\definecolor{grey}{RGB}{230,230,230}
+\definecolor{darkgrey}{RGB}{80,80,80}
+\definecolor{myblue}{RGB}{0,38,240}
+\definecolor{myred}{RGB}{240,38,0}
+
+\tikzset{
+    cross/.style={
+        cross out,
+        line width=0.6pt,
+        draw=red,
+        fill=none,
+        minimum size=3.5*(#1-\pgflinewidth),
+        inner sep=0pt,
+        outer sep=0pt
+    },
+    cross/.default={2pt}
+}
+
+\begin{document}
+\begin{tikzpicture}
+    % Domain
+    \draw[very thick] (0, 0) -- (8, 0);
+    \foreach \i in {0, 0.75, 2.5, 4.75, 7, 8} {
+        % Control labels
+        \draw[dashed, darkgrey] (\i, 1) -- (\i, 0);
+    }
+    \foreach \i/\j/\k in {0/0.75/1, 0.75/2.5/2, 2.5/4.75/3, 4.75/7/4, 7/8/5} {
+        % Control volume caps
+        \draw[darkgrey] (\i, 1) -- ++ (0.1, 0);
+        \draw[darkgrey] (\j, 1) -- ++ (-0.1, 0);
+        % Control volume labels
+        \path[darkgrey] (\i, 1) -- (\j, 1) node[midway, label={[darkgrey,yshift=1]center:\(\Omega_\k\)}] {};
+    }
+    \foreach \i/\j in {0/1, 1.5/2, 3.5/3, 6/4, 8/5} {
+        % Vertex
+        \fill[myblue] (\i, 0) circle (0.07);
+        \fill[white] (\i, 0) circle (0.05);
+        % Node
+        \draw (\i, 0) node[cross] {};
+        % Node Label
+        \draw[dashed, myred] (\i, 0) node[label={[myred,yshift=-10]center:\(x_\j\)}] {};
+    }
+\end{tikzpicture}
+\end{document}

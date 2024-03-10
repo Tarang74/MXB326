@@ -1,0 +1,38 @@
+%!TEX TS-program = xelatex
+%!TEX options = -aux-directory=Debug -shell-escape -file-line-error -interaction=nonstopmode -halt-on-error -synctex=1 "%DOC%"
+\documentclass{standalone}
+
+\usepackage{unicode-math}
+\setmathfont{Latin Modern Math}
+\setmathfont{TeX Gyre Pagella Math}[range={bb,bbit}, Scale=MatchUppercase]
+
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{circuitikz}
+\pgfplotsset{compat=1.18}
+
+\usetikzlibrary{patterns,patterns.meta}
+
+\definecolor{grey}{RGB}{230,230,230}
+\definecolor{darkgrey}{RGB}{80,80,80}
+\definecolor{myblue}{RGB}{0,38,240}
+
+\begin{document}
+\begin{tikzpicture}
+    % Background fill
+    \fill[grey] (0, 0) rectangle (6, 6);
+    % Element
+    \path[pattern={Lines[angle=45,distance=1]}, pattern color=green] (2, 2) rectangle (4, 4);
+    \node at (3, 3) {Element};
+    % Grid
+    \draw[darkgrey] (2, 0) -- (2, 6);
+    \draw[darkgrey] (0, 2) -- (6, 2);
+    \draw[darkgrey] (4, 0) -- (4, 6);
+    \draw[darkgrey] (0, 4) -- (6, 4);
+    % Vertex
+    \fill[myblue] (2, 2) circle (0.07) node[black, anchor=north] {Vertex};
+    \fill[white] (2, 2) circle (0.05);
+    % Border
+    \draw[very thick] (0, 0) rectangle (6, 6);
+\end{tikzpicture}
+\end{document}

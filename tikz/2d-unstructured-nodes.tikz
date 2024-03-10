@@ -1,0 +1,76 @@
+%!TEX TS-program = xelatex
+%!TEX options = -aux-directory=Debug -shell-escape -file-line-error -interaction=nonstopmode -halt-on-error -synctex=1 "%DOC%"
+\documentclass{standalone}
+
+\usepackage{unicode-math}
+\setmathfont{Latin Modern Math}
+\setmathfont{TeX Gyre Pagella Math}[range={bb,bbit}, Scale=MatchUppercase]
+
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{circuitikz}
+\pgfplotsset{compat=1.18}
+
+\usetikzlibrary{patterns,patterns.meta,shapes.misc,arrows.meta}
+
+\definecolor{grey}{RGB}{230,230,230}
+\definecolor{darkgrey}{RGB}{80,80,80}
+\definecolor{myblue}{RGB}{0,38,240}
+\definecolor{myred}{RGB}{240,38,0}
+
+\tikzset{
+    cross/.style={
+        cross out,
+        line width=0.6pt,
+        draw=red,
+        fill=none,
+        minimum size=3.5*(#1-\pgflinewidth),
+        inner sep=0pt,
+        outer sep=0pt
+    },
+    cross/.default={2pt}
+}
+
+\begin{document}
+\begin{tikzpicture}
+    % Background fill
+    \fill[grey] (0, 0) rectangle (6, 6);
+    % Grid
+    \foreach \x/\i/\j in {A/0/0, B/2/0, C/4/0, D/6/0, E/6/2, F/6/4, G/6/6, H/4/6, I/2/6, J/0/6, K/0/4, L/0/2} {
+        \coordinate (\x) at (\i, \j);
+    }
+    \coordinate (M) at (2.2, 2.3);
+    \coordinate (N) at (4.3, 2.9);
+    \coordinate (O) at (3.6, 4.1);
+    \coordinate (P) at (1.9, 3.9);
+    % Element
+    \path[pattern={Lines[angle=45,distance=1]}, pattern color=myred] (L) -- (M) -- (P) -- cycle;
+    \path[pattern={Lines[angle=45,distance=1]}, pattern color=myred]
+        (barycentric cs:P=1,N=1,O=1) -- (barycentric cs:N=1,O=1) --
+        (barycentric cs:G=1,N=1,O=1) -- (barycentric cs:G=1,O=1) --
+        (barycentric cs:G=1,H=1,O=1) -- (barycentric cs:H=1,O=1) --
+        (barycentric cs:H=1,I=1,O=1) -- (barycentric cs:I=1,O=1) --
+        (barycentric cs:P=1,I=1,O=1) -- (barycentric cs:P=1,O=1)
+        -- cycle;
+    % Edges
+    \draw[darkgrey, line join=round] (A) -- (M) -- (B);
+    \draw[darkgrey, line join=round] (M) -- (L) -- (P) -- (K);
+    \draw[darkgrey, line join=round] (J) -- (P) -- (I) -- (O) -- (H);
+    \draw[darkgrey, line join=round] (P) -- (O) -- (G) -- (N) -- (F);
+    \draw[darkgrey, line join=round] (E) -- (N) -- (D);
+    \draw[darkgrey, line join=round] (M) -- (C) -- (N) -- (O) -- (N) -- (P) -- (M) -- (N);
+    % Vertex
+    \fill[myblue] (L) circle (0.07);
+    \fill[white] (L) circle (0.05);
+    \fill[myblue] (O) circle (0.07);
+    \fill[white] (O) circle (0.05);
+    % Vertex-centred
+    \draw[myred] (O) node[cross] {};
+    \draw[myred] (O) node[label={[black,yshift=10]center:{Vertex-centred}}, label={[myred,yshift=-10]center:\(\symbf{x}_1\)}] {};
+    % Cell-centred
+    \draw[myred] (barycentric cs:L=1,M=1,P=1) node[cross] {};
+    \draw[myred] (barycentric cs:L=1,M=1,P=1) node[label={[black,yshift=10]center:{Cell-centred}}, label={[myred,yshift=-10]center:\(\symbf{x}_2\)}] {};
+    % Border
+    \draw[very thick] (0, 0) rectangle (6, 6);
+\end{tikzpicture}
+\end{document}
