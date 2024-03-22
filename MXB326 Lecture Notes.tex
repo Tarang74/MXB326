@@ -405,9 +405,18 @@ Then using the strategy outlined in the previous section, we find:
 \end{equation*}
 where \(u_i \approx \bar{u}_i\) and \(R_i \approx \bar{R}_i\). This equation
 can now be used to solve an initial-boundary value problem using the FVM.
-
-Applying the finite-difference method at each node, we find a linear ODE
-of the form:
+This is done by applying the finite-difference method at internal nodes,
+using:
+\begin{align*}
+    \pdv{u}{x}\left( w_i,\: t \right) & = \frac{u_i - u_{i-1}}{h_{i-1}} \\
+    \pdv{u}{x}\left( e_i,\: t \right) & = \frac{u_{i+1} - u_i}{h_i}
+\end{align*}
+and at boundary nodes, using the boundary conditions:
+\begin{align*}
+    \pdv{u}{x}\left( w_1,\: t \right) & = \pdv{u}{x}\left( 0,\: t \right) & \pdv{u}{x}\left( e_1,\: t \right) & = \frac{u_2 - u_1}{h_1}           &  & \text{(left boundary)}  \\
+    \pdv{u}{x}\left( w_N,\: t \right) & = \frac{u_N - u_{N-1}}{h_{N-1}}   & \pdv{u}{x}\left( e_N,\: t \right) & = \pdv{u}{x}\left( L,\: t \right) &  & \text{(right boundary)}
+\end{align*}
+we find a linear ODE of the form:
 \begin{equation*}
     \odv{\symbf{u}}{t} = \symbf{A} \symbf{u} + \symbf{b}\left( t \right), \qquad \symbf{u}\left( 0 \right) = \symbf{u}^{\left( 0 \right)}
 \end{equation*}
@@ -421,9 +430,82 @@ the coefficients of the finite-difference method, and
 \(\symbf{b}\left( t \right)\) contains any time-dependent terms in the
 transport equation. This ODE can be solved using standard ODE solving
 techniques. When the transport equation is nonlinear, the RHS cannot
-be written as a matrix-vector product, but rather has the form
+be written as a matrix-vector product, so that
 \begin{equation*}
-    \symbf{b}\left( t \right) = \symbf{F}\left( t,\: \symbf{u}\left( t \right) \right).
+    \odv{\symbf{u}}{t} = \symbf{F}\left( t,\: \symbf{u}\left( t \right) \right).
 \end{equation*}
+\subsection{Time Discretisation}
+The resulting ODE can be solved using a time-stepping method such as
+the Forward Euler, the Backward Euler, or the Crank-Nicolson methods.
+To solve this initial value problem, we will consider a sufficiently
+large final time, \(T\), so that the problem is solved between \(t =
+0\) and \(t = T\). Then, we will discretise the time domain into \(M\)
+time steps of size \(\fdif{t} = T/M = t_{n+1} - t_n\), such that \(t_n
+= n \fdif{t}\) for \(n = 0,\: 1,\: \ldots,\: M\).
 
+Let us rewrite the ODE in the equivalent form:
+\begin{equation*}
+    \odv{\symbf{u}}{t} = \symbf{A} \symbf{u} + \symbf{b}_1 + \symbf{b}_2\left( t \right), \qquad \symbf{u}\left( 0 \right) = \symbf{u}^{\left( 0 \right)}
+\end{equation*}
+such that \(\symbf{b}_2\left( t \right) = {\left( R\left( x_1,\: t \right),\: \dots,\: R\left( x_N,\: t \right) \right)}^\top\)
+is the time-dependent flux term, and \(\symbf{b}_1 = \symbf{b}\left( t \right) - \symbf{b}_2\left( t \right)\)
+contains the time-independent reaction term. We will now compute
+\(\symbf{u}^{\left( n \right)} = {\left( u_1^{\left( n \right)},\: \dots,\: u_N^{\left( n \right)} \right)}^\top\),
+where \(u_i^{\left( n \right)} \approx u_i\left( t_n \right) = u\left( x_i,\: t_n \right)\),
+is the solution at \(x = x_i\) and time \(t = t_n\), using the
+\(\theta\)-method.
+
+Let us first integrate the ODE over the time interval
+\(\ointerval{t_n}{t_{n+1}}\):
+\begin{align*}
+    \int_{t_n}^{t_{n+1}} \odv{\symbf{u}}{t} \odif{t}              & = \int_{t_n}^{t_{n+1}} \left( \symbf{A} \symbf{u} + \symbf{b}_1 + \symbf{b}_2\left( t \right) \right) \odif{t}                                              \\
+    \symbf{u}\left( t_{n+1} \right) - \symbf{u}\left( t_n \right) & = \symbf{A} \int_{t_n}^{t_{n+1}} \symbf{u} \odif{t} + \int_{t_n}^{t_{n+1}} \symbf{b}_1 \odif{t} + \int_{t_n}^{t_{n+1}} \symbf{b}_2\left( t \right) \odif{t} \\
+    \symbf{u}^{\left( n+1 \right)} - \symbf{u}^{\left( n \right)} & = \symbf{A} \int_{t_n}^{t_{n+1}} \symbf{u} \odif{t} + \symbf{b}_1 \left( t_{n+1} - t_n \right) + \int_{t_n}^{t_{n+1}} \symbf{b}_2\left( t \right) \odif{t}
+\end{align*}
+To integrate the time-dependent terms, we will use the weighted \(\theta\)
+approximation, where
+\begin{equation*}
+    \int_{t_n}^{t_{n+1}} f\left( t \right) \odif{t} \approx \fdif{t} \left[ \left( 1 - \theta \right) f\left( t_n \right) + \theta f\left( t_{n+1} \right) \right].
+\end{equation*}
+Therefore, we have
+\begin{align*}
+    \symbf{u}^{\left( n+1 \right)} - \symbf{u}^{\left( n \right)}                               & = \fdif{t} \symbf{A} \left[ \left( 1 - \theta_1 \right) \symbf{u}^{\left( n \right)} + \theta_1 \symbf{u}^{\left( n+1 \right)} \right] + \symbf{b}_1 \fdif{t} + \fdif{t} \left[ \left( 1 - \theta_2 \right) \symbf{b}_2^{\left( n \right)} + \theta_2 \symbf{b}_2^{\left( n+1 \right)} \right] \\
+    \symbf{u}^{\left( n+1 \right)} - \symbf{A} \theta_1 \fdif{t} \symbf{u}^{\left( n+1 \right)} & = \symbf{u}^{\left( n \right)} + \fdif{t} \left( 1 - \theta_1 \right) \symbf{A} \symbf{u}^{\left( n \right)} + \fdif{t} \symbf{b}_1 + \fdif{t} \left[ \left( 1 - \theta_2 \right) \symbf{b}_2^{\left( n \right)} + \theta_2 \symbf{b}_2^{\left( n+1 \right)} \right]                           \\
+    \left( \symbf{I} - \fdif{t} \theta_1 \symbf{A} \right) \symbf{u}^{\left( n+1 \right)}       & = \left[ \symbf{I} + \fdif{t} \left( 1 - \theta_1 \right) \symbf{A} \right] \symbf{u}^{\left( n \right)} + \fdif{t} \left[ \symbf{b}_1 + \left( 1 - \theta_2 \right) \symbf{b}_2^{\left( n \right)} + \theta_2 \symbf{b}_2^{\left( n+1 \right)} \right]
+\end{align*}
+for two choices of \(\theta_1\) and \(\theta_2\).
+Setting \(\theta_1 = \theta_2 = 0\), we obtain the Forward Euler method:
+\begin{equation*}
+    \symbf{u}^{\left( n+1 \right)} = \left( \symbf{I} + \fdif{t} \symbf{A} \right) \symbf{u}^{\left( n \right)} + \fdif{t} \left( \symbf{b}_1 + \symbf{b}_2^{\left( n \right)} \right)
+\end{equation*}
+which is an explicit method. Setting \(\theta_1 = \theta_2 = 1\), yields
+the Backward Euler method:
+\begin{equation*}
+    \left( \symbf{I} - \fdif{t} \symbf{A} \right) \symbf{u}^{\left( n+1 \right)} = \symbf{u}^{\left( n \right)} + \fdif{t} \left( \symbf{b}_1 + \symbf{b}_2^{\left( n+1 \right)} \right)
+\end{equation*}
+while setting \(\theta_1 = \theta_2 = \frac{1}{2}\) gives the Crank-Nicolson
+method:
+\begin{equation*}
+    \left( \symbf{I} - \frac{\fdif{t}}{2} \symbf{A} \right) \symbf{u}^{\left( n+1 \right)} = \left( \symbf{I} + \frac{\fdif{t}}{2} \symbf{A} \right) \symbf{u}^{\left( n \right)} + \frac{\fdif{t}}{2} \left( 2 \symbf{b}_1 + \symbf{b}_2^{\left( n \right)} + \symbf{b}_2^{\left( n+1 \right)} \right)
+\end{equation*}
+which are both implicit methods. Using different values for \(\theta_1\)
+and \(\theta_2\) is also possible, and is called the IMEX method (Implicit-Explicit).
+\subsection{Time Discretisation for the 1D FVM}
+We can apply the same time discretisation to the 1D FVM. Let us
+consider the 1D FVM with the following ODE:
+\begin{equation*}
+    \odv{u_i}{t} = \frac{1}{V_i} \left( q_{w_i} - q_{e_i} \right) + R_i
+\end{equation*}
+where \(u_i \approx \bar{u}_i\) and \(R_i \approx \bar{R}_i\). We will
+now compute \(u_i^{\left( n \right)} = u_i\left( t_n \right) = u\left( x_i,\: t_n \right)\)
+using the \(\theta\)-method. We will first integrate the ODE over the
+time interval \(\ointerval{t_n}{t_{n+1}}\):
+\begin{align*}
+    \int_{t_n}^{t_{n+1}} \odv{u_i}{t} \odif{t}        & = \int_{t_n}^{t_{n+1}} \left( \frac{1}{V_i} \left( q_{w_i} - q_{e_i} \right) + R_i \right) \odif{t}                                                                                                                                                                                                              \\
+    u_i\left( t_{n+1} \right) - u_i\left( t_n \right) & = \frac{1}{V_i} \int_{t_n}^{t_{n+1}} q_{w_i} - q_{e_i} \odif{t} + \int_{t_n}^{t_{n+1}} R_i \odif{t}                                                                                                                                                                                                              \\
+    u_i^{\left( n+1 \right)} - u_i^{\left( n \right)} & = \begin{aligned}[t]
+        &{}\frac{\fdif{t}}{V_i} \left[ \left( 1 - \theta_1 \right) \left( q_{w_i}^{\left( n \right)} - q_{e_i}^{\left( n \right)} \right) + \theta_1 \left( q_{w_i}^{\left( n+1 \right)} - q_{e_i}^{\left( n+1 \right)} \right) \right] \\
+        &{}+ \fdif{t} \left[ \left( 1 - \theta_2 \right) R_i^{\left( n \right)} + \theta_2 R_i^{\left( n+1 \right)} \right]
+    \end{aligned}
+\end{align*}
 \end{document}
