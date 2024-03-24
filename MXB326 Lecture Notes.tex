@@ -471,7 +471,8 @@ Therefore, we have
 \begin{align*}
     \symbf{u}^{\left( n+1 \right)} - \symbf{u}^{\left( n \right)}                               & = \fdif{t} \symbf{A} \left[ \left( 1 - \theta_1 \right) \symbf{u}^{\left( n \right)} + \theta_1 \symbf{u}^{\left( n+1 \right)} \right] + \symbf{b}_1 \fdif{t} + \fdif{t} \left[ \left( 1 - \theta_2 \right) \symbf{b}_2^{\left( n \right)} + \theta_2 \symbf{b}_2^{\left( n+1 \right)} \right] \\
     \symbf{u}^{\left( n+1 \right)} - \symbf{A} \theta_1 \fdif{t} \symbf{u}^{\left( n+1 \right)} & = \symbf{u}^{\left( n \right)} + \fdif{t} \left( 1 - \theta_1 \right) \symbf{A} \symbf{u}^{\left( n \right)} + \fdif{t} \symbf{b}_1 + \fdif{t} \left[ \left( 1 - \theta_2 \right) \symbf{b}_2^{\left( n \right)} + \theta_2 \symbf{b}_2^{\left( n+1 \right)} \right]                           \\
-    \left( \symbf{I} - \fdif{t} \theta_1 \symbf{A} \right) \symbf{u}^{\left( n+1 \right)}       & = \left[ \symbf{I} + \fdif{t} \left( 1 - \theta_1 \right) \symbf{A} \right] \symbf{u}^{\left( n \right)} + \fdif{t} \left[ \symbf{b}_1 + \left( 1 - \theta_2 \right) \symbf{b}_2^{\left( n \right)} + \theta_2 \symbf{b}_2^{\left( n+1 \right)} \right]
+    \left( \symbf{I} - \fdif{t} \theta_1 \symbf{A} \right) \symbf{u}^{\left( n+1 \right)}       & = \left[ \symbf{I} + \fdif{t} \left( 1 - \theta_1 \right) \symbf{A} \right] \symbf{u}^{\left( n \right)} + \fdif{t} \left[ \symbf{b}_1 + \left( 1 - \theta_2 \right) \symbf{b}_2^{\left( n \right)} + \theta_2 \symbf{b}_2^{\left( n+1 \right)} \right] \\
+    \tilde{\symbf{A}} \symbf{u}^{\left( n+1 \right)}                                              & = \tilde{\symbf{b}}
 \end{align*}
 for two choices of \(\theta_1\) and \(\theta_2\).
 Setting \(\theta_1 = \theta_2 = 0\), we obtain the Forward Euler method:
@@ -508,4 +509,11 @@ time interval \(\ointerval{t_n}{t_{n+1}}\):
         &{}+ \fdif{t} \left[ \left( 1 - \theta_2 \right) R_i^{\left( n \right)} + \theta_2 R_i^{\left( n+1 \right)} \right]
     \end{aligned}
 \end{align*}
+\subsection{Dirichlet Boundary Conditions}
+Given the above linear system, we can also modify the system to account
+for Dirichlet boundary conditions rather than Neumann boundary conditions
+by replacing the first row of the matrix \(\tilde{\symbf{A}}\) with
+\({\left( 1,\: 0,\: \dots,\: 0 \right)} \in \R^{1 \times N}\) and
+the first element of the RHS vector \(\tilde{\symbf{b}}\) with the Dirichlet
+boundary condition.
 \end{document}
