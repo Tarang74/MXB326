@@ -46,7 +46,7 @@
 \tableofcontents
 \newpage
 %
-\section{The Transport Equation}
+\section{Transport Problems}
 \subsection{Transport Phenomena}
 Transport phenomena broadly comprises three disciplines; fluid
 dynamics, heat transfer, and mass transfer.\ \textbf{Fluid dynamics} is
@@ -54,28 +54,21 @@ the study of the motion of fluids, including liquids and gases.\
 \textbf{Heat transfer} is the study of how heat (thermal energy) is
 transported, generated, dissipated, and/or converted in a physical
 system.\ \textbf{Mass transfer} is the study of the movement of mass
-from one location to another.
-
-The mathematical equations used to describe the above phenomena involve
-three fundamental mechanisms of transport:
+from one location to another. The mathematical equations used to
+describe the above phenomena involve three fundamental mechanisms of
+transport:
 \begin{enumerate}
-    \item Diffusion
-    \item Advection
-    \item Reaction
+    \item \textbf{Diffusion}: The gradual movement of a substance from regions of high
+          concentration to regions of low concentration. The direction of
+          diffusion is determined by the sign of the negative gradient of the
+          concentration.
+    \item \textbf{Advection}: The transport of a substance by bulk motion of a fluid.
+          Advection is driven by a vector field in which the substance is
+          transported.
+    \item \textbf{Reaction}: The process in which substances are created or destroyed.
+          Reaction is represented as a source or sink function.
 \end{enumerate}
-\subsubsection{Diffusion}
-\textit{Diffusion} is the gradual movement of a substance from regions of high
-concentration to regions of low concentration. The direction of
-diffusion is determined by the sign of the negative gradient of the
-concentration.
-\subsubsection{Advection}
-\textit{Advection} is the transport of a substance by bulk motion of a fluid.
-Advection is driven by a vector field in which the substance is
-transported.
-\subsubsection{Reaction}
-Reaction is the process in which substances are created or destroyed.
-Reaction is represented as a source or sink function.
-\subsection{Transport Equation}
+\subsection{The Transport Equation}
 The general form of the transport equation is given by
 \begin{equation*}
     \underbrace{\pdv{u}{t}}_{\text{unsteady term}} + \underbrace{\symbf{\nabla} \cdot \left( \symbf{v} u \right) \vphantom{\pdv{u}{t}}}_{\text{advection term}} = \underbrace{\symbf{\nabla} \cdot \left( \symbf{D} \symbf{\nabla} u \right) \vphantom{\pdv{u}{t}}}_{\text{diffusion term}} + \underbrace{R \vphantom{\pdv{u}{t}}}_{\text{reaction term}}
@@ -83,9 +76,10 @@ The general form of the transport equation is given by
 where \(u\left( \symbf{x},\: t \right)\) is the quantity being transported
 at position \(\symbf{x}\) and time \(t\), \(\symbf{v}\left( \symbf{x},\: t \right) \in \R^n\)
 is a velocity vector field which drives \(u\),
-\(\symbf{D} \in \R^{n \times n}\) is the diffusion matrix, and \(R\) is
-a reaction term.\ \(n\) represents the dimension of the spatial domain
-of the problem, which can be 1, 2, or 3.
+\(\symbf{D} \in \R^{n \times n}\) is the diffusion matrix, and
+\(R\left( \symbf{x},\: t \right)\) is a reaction term.\ \(n\) represents
+the dimension of the spatial domain of the problem, which can be 1, 2,
+or 3.
 
 An alternative form of the transport equation combines the divergence
 terms
@@ -93,10 +87,8 @@ terms
     \underbrace{\pdv{u}{t} \vphantom{\pdv{u}{t}}}_{\text{unsteady term}} + \underbrace{\symbf{\nabla} \cdot \symbf{q} \vphantom{\pdv{u}{t}}}_{\text{flux term}} = \underbrace{R \vphantom{\pdv{u}{t}}}_{\text{reaction term}}
 \end{equation*}
 where \(\symbf{q} = \symbf{v} u - \symbf{D} \symbf{\nabla} u\) is the
-\textit{flux vector}.
-\subsubsection{Domain}
-This PDE is defined on a specified domain \(\Omega\) which is an open
-connected subset of \(\R^n\), with the boundary \(\partial \Omega\).
+\textit{flux vector}. This PDE is defined on an open connected subset
+\(\Omega \subset \R^n\) with the boundary \(\partial \Omega\).
 \subsubsection{Derivation}
 The transport equation can be derived from the conservation of mass
 principle: the rate of change of the quantity \(u\) within a region
@@ -198,7 +190,6 @@ conditions}. Some common boundary conditions include:
 Here \(u_b\), \(q_b\), and \(d_b\) may be constants or scalar functions
 of \(\symbf{x}\) and/or \(t\), and \(\symbf{n}\) is the unit normal vector
 to \(\partial \Omega\), directed outward from \(\Omega\).
-
 We may also wish to use a Robin condition to describe a general
 boundary condition of the form:
 \begin{equation*}
@@ -207,7 +198,6 @@ boundary condition of the form:
 where \(a\), \(b\), and \(c\) are constants or scalar functions of
 \(\symbf{x}\) and/or \(t\). When \(c = 0\), the condition is called
 \textit{homogeneous}, and \textit{nonhomogeneous} otherwise.
-
 In addition to these conditions, an \textit{initial condition} is
 required to specify the profile of \(u\) at time \(t = 0\).
 \subsection{Steady-State Problems}
@@ -221,20 +211,18 @@ The steady-state solution is useful for understanding the long-term
 behaviour of the system, where it is assumed that the system is no longer
 time-dependent. The steady-state solution is expressed as
 \(u_\infty = \lim_{t \to \infty} u\left( \symbf{x},\: t \right)\).
-\section{Finite Volume Method}
+\part{Finite Volume Method}
 The \textit{Finite Volume Method} (FVM) is a method for solving the
 transport equation at discrete points (nodes) in space: \(u_i\left( t
 \right) \approx u\left( \symbf{x}_i,\: t \right)\) for \(i = 1,\: 2,\:
 \ldots,\: N\). FVM is a \textit{spatial discretisation} method that
 converts a spatially-continuous initial-boundary value problem to a
-satially-discrete initial-value problem.
-
-The FVM is used in transport phenomena because the approximate solution
-obeys the laws of conservation of mass and energy. This is generally
-not true for finite differences or finite element methods. FVM also has
-the advantage of being able to handle complex geometries and irregular
-grids.
-\subsection{Discretising the Domain}
+satially-discrete initial-value problem. The FVM is used in transport
+phenomena because the approximate solution obeys the laws of
+conservation of mass and energy. This is generally not true for finite
+differences or finite element methods. FVM also has the advantage of
+being able to handle complex geometries and irregular grids.
+\section{Spatial Discretisation}
 The basic geometric structure used in the FVM is called the
 \textbf{mesh}. A mesh is a partitioning of the domain \(\Omega\) into
 smaller sub-domains called \textbf{elements}. The intersection of edges
@@ -264,7 +252,7 @@ consist of triangles (or tetrahedra in 3D).
 \end{figure}
 The FVM defines:
 \begin{itemize}
-    \item \textbf{Nodes} \(\symbf{x}_i\), at which the solution is
+    \item \textbf{Nodes} \(x_i\), at which the solution is
           approximated by \(u_i\)
     \item \textbf{Control volumes} \(\Omega_i\), over which the
           conservation principle is applied
@@ -314,8 +302,9 @@ Consider a mesh with \(N\) nodes and \(N\) control volumes:
 \begin{enumerate}
     \item Label the nodes \(x_1,\: x_2,\: \ldots,\: x_N\) and the
           unknowns \(u_1,\: u_2,\: \ldots,\: u_N\).
-    \item Identify the control volume types (interior node, boundary
-          node).
+    \item Identify the control volume types (interior nodes when \(2
+          \leqslant i \leqslant N-1\), boundary nodes when \(i = 1\) or
+          \(i = N\)).
     \item Integrate the transport equation over each control volume and
           apply the Divergence theorem to the flux term.
     \item Incorporate the boundary conditions to approximate/discretise
@@ -343,14 +332,292 @@ rewrite the transport equation as
 \begin{equation*}
     \odv{\bar{u}_i}{t} + \frac{1}{V_i} \int_{\partial \Omega_i} \left( \symbf{q} \cdot \symbf{n} \right) \odif{s} = \bar{R}_i.
 \end{equation*}
-We can now approximate this ODE using the discrete approximations, \(u_i\)
-and \(R_i\), at each node \(\symbf{x}_i\).
+\section{The Time-Dependent Transport Equation}
+Using the discrete approximations \(u_i\) and \(R_i\), at each node
+\(x_i\), we arrive at the discrete form of the transport equation:
+\begin{equation}
+    \boxed{
+        \odv{u_i}{t} = - \frac{1}{V_i} \int_{\partial \Omega_i} \left( \symbf{q} \cdot \symbf{n} \right) \odif{s} + R_i.
+    }
+\end{equation}
+Constructing this equation for all \(i\) gives a system of \(N\) ODEs
+for the unknowns \(u_i\), in time:
 \begin{equation*}
-    \odv{u_i}{t} = - \frac{1}{V_i} \int_{\partial \Omega_i} \left( \symbf{q} \cdot \symbf{n} \right) \odif{s} + R_i
+    \odv{\symbf{u}}{t} = \symbf{A} \symbf{u} + \symbf{b}\left( t \right), \qquad \symbf{u}\left( 0 \right) = \symbf{u}^{\left( 0 \right)}
 \end{equation*}
-\subsection{FVM in 1D}
-Before we consider the 1D case for the FVM, let us define the following
-geometric quantities (for the vertex-centred control volume strategy):
+where \(\symbf{u} = {\left( u_1,\: \dots,\: u_N \right)}^\top\) is the
+numerical solution vector at time \(t\) containing the solution at each
+node \(x_i\), and
+\(\symbf{u}^{\left( 0 \right)} = {\left( f\left( x_1 \right),\: \dots,\: f\left( x_N \right) \right)}^\top\)
+is the initial solution vector.\ \(\symbf{A} \in \R^{N \times N}\) is a
+tridiagonal matrix which consists of coefficients obtained via the
+finite-difference method, and \(\symbf{b}\left( t \right)\) contains any
+time-dependent terms in the transport equation. Note that when the
+transport equation is nonlinear, it is expressed as
+\begin{equation*}
+    \odv{\symbf{u}}{t} = \symbf{F}\left( t,\: \symbf{u}\left( t \right) \right).
+\end{equation*}
+\section{Time Discretisation}
+This time-dependent ODE can be solved using the \(\theta\)-methods.
+Consider a sufficiently large final time \(T\), and discretise time
+domain into \(M\) time steps of size \(\fdif{t} = T/M = t_{n+1} -
+t_n\), such that \(t_n = n \fdif{t}\) for \(n = 0,\: 1,\: \ldots,\:
+M\). Then let us split the nonhomogeneous part of this ODE into the
+time-independent and time-dependent parts:
+\begin{equation*}
+    \odv{\symbf{u}}{t} = \symbf{A} \symbf{u} + \symbf{b}_1 + \symbf{b}_2\left( t \right), \qquad \symbf{u}\left( 0 \right) = \symbf{u}^{\left( 0 \right)}.
+\end{equation*}
+We can then compute \(\symbf{u}^{\left( n \right)} = {\left( u_1^{\left( n \right)},\: \dots,\: u_N^{\left( n \right)} \right)}^\top\),
+where \(u_i^{\left( n \right)} \approx u_i\left( t_n \right) = u\left( x_i,\: t_n \right)\),
+is the solution at \(x = x_i\) and time \(t = t_n\), using the \(\theta\)-method.
+
+Let us integrate this ODE over the time interval
+\(\ointerval{t_n}{t_{n+1}}\):
+\begin{align*}
+    \int_{t_n}^{t_{n+1}} \odv{\symbf{u}}{t} \odif{t}              & = \int_{t_n}^{t_{n+1}} \left( \symbf{A} \symbf{u} + \symbf{b}_1 + \symbf{b}_2\left( t \right) \right) \odif{t}                                              \\
+    \symbf{u}\left( t_{n+1} \right) - \symbf{u}\left( t_n \right) & = \symbf{A} \int_{t_n}^{t_{n+1}} \symbf{u} \odif{t} + \int_{t_n}^{t_{n+1}} \symbf{b}_1 \odif{t} + \int_{t_n}^{t_{n+1}} \symbf{b}_2\left( t \right) \odif{t} \\
+    \symbf{u}^{\left( n+1 \right)} - \symbf{u}^{\left( n \right)} & = \symbf{A} \int_{t_n}^{t_{n+1}} \symbf{u} \odif{t} + \symbf{b}_1 \left( t_{n+1} - t_n \right) + \int_{t_n}^{t_{n+1}} \symbf{b}_2\left( t \right) \odif{t}.
+\end{align*}
+To integrate the time-dependent terms, we will use a \textit{weighted
+    \(\theta\) approximation}, where
+\begin{equation*}
+    \int_{t_n}^{t_{n+1}} f\left( t \right) \odif{t} \approx \fdif{t} \left[ \left( 1 - \theta \right) f\left( t_n \right) + \theta f\left( t_{n+1} \right) \right].
+\end{equation*}
+Then,
+\begin{align*}
+    \symbf{u}^{\left( n+1 \right)} - \symbf{u}^{\left( n \right)}                               & = \fdif{t} \symbf{A} \left[ \left( 1 - \theta_1 \right) \symbf{u}^{\left( n \right)} + \theta_1 \symbf{u}^{\left( n+1 \right)} \right] + \symbf{b}_1 \fdif{t} + \fdif{t} \left[ \left( 1 - \theta_2 \right) \symbf{b}_2^{\left( n \right)} + \theta_2 \symbf{b}_2^{\left( n+1 \right)} \right] \\
+    \symbf{u}^{\left( n+1 \right)} - \symbf{A} \theta_1 \fdif{t} \symbf{u}^{\left( n+1 \right)} & = \symbf{u}^{\left( n \right)} + \fdif{t} \left( 1 - \theta_1 \right) \symbf{A} \symbf{u}^{\left( n \right)} + \fdif{t} \symbf{b}_1 + \fdif{t} \left[ \left( 1 - \theta_2 \right) \symbf{b}_2^{\left( n \right)} + \theta_2 \symbf{b}_2^{\left( n+1 \right)} \right]
+\end{align*}
+giving us the time-stepping formula
+\begin{equation*}
+    \boxed{
+    \left( \symbf{I} - \fdif{t} \theta_1 \symbf{A} \right) \symbf{u}^{\left( n+1 \right)} = \left[ \symbf{I} + \fdif{t} \left( 1 - \theta_1 \right) \symbf{A} \right] \symbf{u}^{\left( n \right)} + \fdif{t} \left[ \symbf{b}_1 + \left( 1 - \theta_2 \right) \symbf{b}_2^{\left( n \right)} + \theta_2 \symbf{b}_2^{\left( n+1 \right)} \right]
+    }
+\end{equation*}
+for two choices of \(\theta_1\) and \(\theta_2\). For convenience, we will
+write this as
+\begin{equation*}
+    \tilde{\symbf{A}} \symbf{u}^{\left( n+1 \right)} = \tilde{\symbf{B}} \symbf{u}^{\left( n \right)} + \tilde{\symbf{b}}.
+\end{equation*}
+Setting \(\theta_1 = \theta_2 = 0\), we obtain the Forward Euler method:
+\begin{equation*}
+    \symbf{u}^{\left( n+1 \right)} = \left( \symbf{I} + \fdif{t} \symbf{A} \right) \symbf{u}^{\left( n \right)} + \fdif{t} \left( \symbf{b}_1 + \symbf{b}_2^{\left( n \right)} \right)
+\end{equation*}
+which is an explicit method. Setting \(\theta_1 = \theta_2 = 1\), yields
+the Backward Euler method:
+\begin{equation*}
+    \left( \symbf{I} - \fdif{t} \symbf{A} \right) \symbf{u}^{\left( n+1 \right)} = \symbf{u}^{\left( n \right)} + \fdif{t} \left( \symbf{b}_1 + \symbf{b}_2^{\left( n+1 \right)} \right)
+\end{equation*}
+while setting \(\theta_1 = \theta_2 = \frac{1}{2}\) gives the Crank-Nicolson
+method:
+\begin{equation*}
+    \left( \symbf{I} - \frac{\fdif{t}}{2} \symbf{A} \right) \symbf{u}^{\left( n+1 \right)} = \left( \symbf{I} + \frac{\fdif{t}}{2} \symbf{A} \right) \symbf{u}^{\left( n \right)} + \frac{\fdif{t}}{2} \left( 2 \symbf{b}_1 + \symbf{b}_2^{\left( n \right)} + \symbf{b}_2^{\left( n+1 \right)} \right)
+\end{equation*}
+which are both implicit methods. Using different values for \(\theta_1\)
+and \(\theta_2\) is also possible, and these methods are known as the
+IMEX (Implicit-Explicit) methods.
+\subsection{Dirichlet Boundary Conditions}
+When a problem defines Dirichlet boundary conditions rather than
+Neumann boundary conditions, we must replace the first row of the
+matrix \(\tilde{\symbf{A}}\) with \({\left( 1,\: 0,\: \dots,\: 0
+\right)} \in \R^{1 \times N}\) and the first element of the RHS vector
+\(\tilde{\symbf{b}}\) with the Dirichlet boundary condition to ensure
+that the boundary condition is satisfied.
+\section{Stability Analysis}
+Consider the result
+\begin{equation*}
+    \tilde{\symbf{A}} \symbf{u}^{\left( n+1 \right)} = \tilde{\symbf{B}} \symbf{u}^{\left( n \right)} + \tilde{\symbf{b}}
+\end{equation*}
+and let us assume that \(\tilde{\symbf{A}}\) is invertible, so that we
+can construct the recurrence relation
+\begin{equation*}
+    \symbf{u}^{\left( n+1 \right)} = \tilde{\symbf{A}}^{-1} \tilde{\symbf{B}} \symbf{u}^{\left( n \right)} + \tilde{\symbf{A}}^{-1} \tilde{\symbf{b}}.
+\end{equation*}
+If we consider the homogeneous part of this equation, and let
+\(\symbf{T} = \tilde{\symbf{A}}^{-1} \tilde{\symbf{B}}\), we can
+analyse the stability of our time discretisation method using
+spectral analysis:
+\begin{equation*}
+    \symbf{u}^{\left( n+1 \right)} = \symbf{T} \symbf{u}^{\left( n \right)}.
+\end{equation*}
+For a uniform mesh, the matrix \(\symbf{A}\) is tridiagonal with constant
+diagonals (or \textit{Toeplitz tridiagonal}):
+\begin{equation*}
+    \symbf{A} =
+    \begin{pmatrix}
+        \alpha & \beta  &        &        &        \\
+        \gamma & \alpha & \beta  &        &        \\
+               & \gamma & \alpha & \ddots &        \\
+               &        & \ddots & \ddots & \beta  \\
+               &        &        & \gamma & \alpha
+    \end{pmatrix}
+    .
+\end{equation*}
+Such a matrix has eigenvalues
+\begin{equation*}
+    \lambda_i = \alpha + 2 \sqrt{\beta} \sqrt{\gamma} \cos\left( \frac{i \pi}{N+1} \right), \qquad i = 1,\: 2,\: \ldots,\: N
+\end{equation*}
+where \(N\) is the number of nodes. Consider an error term
+\(\symbf{\varepsilon}^{\left( 0 \right)}\) present in the
+initial solution vector \(\symbf{u}^{\left( 0 \right)}\) at time \(t = 0\).
+Then, by the recurrence relation established above,
+\begin{align*}
+    \symbf{u}^{\left( 1 \right)} & = \symbf{T} \symbf{u}^{\left( 0 \right)} = \symbf{T} \left( \symbf{u}^{\left( 0 \right)} + \symbf{\varepsilon}^{\left( 0 \right)} \right) = \symbf{T} \symbf{u}^{\left( 0 \right)} + \symbf{T} \symbf{\varepsilon}^{\left( 0 \right)}                                \\
+    \symbf{u}^{\left( 2 \right)} & = \symbf{T} \symbf{u}^{\left( 1 \right)} = \symbf{T} \left( \symbf{T} \symbf{u}^{\left( 0 \right)} + \symbf{T} \symbf{\varepsilon}^{\left( 0 \right)} \right) = \symbf{T}^2 \symbf{u}^{\left( 0 \right)} + \symbf{T}^2 \symbf{\varepsilon}^{\left( 0 \right)}        \\
+                                 & \vdotswithin{=}                                                                                                                                                                                                                                                      \\
+    \symbf{u}^{\left( n \right)} & = \symbf{T} \symbf{u}^{\left( n-1 \right)} = \symbf{T} \left( \symbf{T} \symbf{u}^{\left( n-2 \right)} + \symbf{T} \symbf{\varepsilon}^{\left( n-2 \right)} \right) = \symbf{T}^n \symbf{u}^{\left( 0 \right)} + \symbf{T}^n \symbf{\varepsilon}^{\left( 0 \right)}.
+\end{align*}
+Thus, we must ensure that the error term \(\symbf{T}^n \symbf{\varepsilon}^{\left( 0 \right)}\)
+does not grow unbounded as \(n \to M\). This is only possible when the
+spectral radius of the matrix \(\symbf{T}\) is smaller than 1, i.e.,
+\(\rho\left( \symbf{T} \right) < 1\).
+
+Given that the matrix \(\symbf{A}\) is Toeplitz tridiagonal with
+eigenpairs \(\left( \lambda_i,\: \symbf{v}_i \right)\), consider the
+eigenvalue problem for the matrix \(\tilde{\symbf{A}}\):
+\begin{align*}
+    \symbf{A} \symbf{v}_i                                                & = \lambda_i \symbf{v}_i                                                \\
+    \left( \fdif{t} \theta_1 \symbf{A} \right) \symbf{v}_i               & = \left( \fdif{t} \theta_1 \lambda_i \right) \symbf{v}_i               \\
+    \symbf{v}_i - \left( \fdif{t} \theta_1 \symbf{A} \right) \symbf{v}_i & = \symbf{v}_i - \left( \fdif{t} \theta_1 \lambda_i \right) \symbf{v}_i \\
+    \left( \symbf{I} - \fdif{t} \theta_1 \symbf{A} \right) \symbf{v}_i   & = \left( 1 - \fdif{t} \theta_1 \lambda_i \right) \symbf{v}_i           \\
+    \tilde{\symbf{A}} \symbf{v}_i                                        & = \psi_i \symbf{v}_i.
+\end{align*}
+Similarly for the matrix \(\tilde{\symbf{B}}\):
+\begin{align*}
+    \symbf{A} \symbf{v}_i                                                                   & = \lambda_i \symbf{v}_i                                                                   \\
+    \left( \fdif{t} \left( 1 - \theta_1 \right) \symbf{A} \right) \symbf{v}_i               & = \left( \fdif{t} \left( 1 - \theta_1 \right) \lambda_i \right) \symbf{v}_i               \\
+    \symbf{v}_i + \left( \fdif{t} \left( 1 - \theta_1 \right) \symbf{A} \right) \symbf{v}_i & = \symbf{v}_i + \left( \fdif{t} \left( 1 - \theta_1 \right) \lambda_i \right) \symbf{v}_i \\
+    \left( \symbf{I} + \fdif{t} \left( 1 - \theta_1 \right) \symbf{A} \right) \symbf{v}_i   & = \left( 1 + \fdif{t} \left( 1 - \theta_1 \right) \lambda_i \right) \symbf{v}_i           \\
+    \tilde{\symbf{B}} \symbf{v}_i                                                           & = \phi_i \symbf{v}_i.
+\end{align*}
+Thus, the eigenvalues of the matrices \(\tilde{\symbf{A}}\) and
+\(\tilde{\symbf{B}}\) are \(\left( 1 - \fdif{t} \theta_1 \lambda_i \right)\)
+and \(\left( 1 + \fdif{t} \left( 1 - \theta_1 \right) \lambda_i \right)\),
+respectively, so that the eigenvalues of the matrix \(\symbf{T}\) are
+given by the ratio of the eigenvalues of the matrices \(\tilde{\symbf{A}}\)
+and \(\tilde{\symbf{B}}\):
+\begin{align*}
+    \tilde{\symbf{A}}^{-1} \tilde{\symbf{B}} \symbf{v}_i & = \tilde{\symbf{A}}^{-1} \left( \phi_i \symbf{v}_i \right)                                                \\
+    \symbf{T} \symbf{v}_i                                & = \frac{1}{\psi_i} \phi_i \symbf{v}_i                                                                     \\
+    \symbf{T} \symbf{v}_i                                & = \frac{1 + \fdif{t} \left( 1 - \theta_1 \right) \lambda_i}{1 - \fdif{t} \theta_1 \lambda_i} \symbf{v}_i.
+\end{align*}
+We can now find a lower bound for the spectral radius through some
+algebra:
+\begin{align*}
+    \rho\left( \symbf{T} \right) & = \max \abs*{\frac{1 + \fdif{t} \left( 1 - \theta_1 \right) \lambda_i}{1 - \fdif{t} \theta_1 \lambda_i}}                                                                                                                                                                                                             \\
+                                 & = \max \abs*{\frac{1 + \fdif{t} \lambda_i - \fdif{t} \theta_1 \lambda_i}{1 - \fdif{t} \theta_1 \lambda_i}}                                                                                                                                                                                                           \\
+                                 & = \max \abs*{1 + \frac{\fdif{t} \lambda_i}{1 - \fdif{t} \theta_1 \lambda_i}}.                                                                                                                                                                                                                                        \\
+                                 & = \max \abs*{1 + \frac{\fdif{t} \left( \alpha + 2 \sqrt{\beta \gamma} \cos\left( \frac{i \pi}{N+1} \right) \right)}{1 - \fdif{t} \theta_1 \left( \alpha + 2 \sqrt{\beta \gamma} \cos\left( \frac{i \pi}{N+1} \right) \right)}}                                                                                       \\
+                                 & = \max \abs*{1 + \frac{\fdif{t} \left( \alpha + 2 \sqrt{\beta \gamma} - 4 \sqrt{\beta \gamma} \sin^2\left( \frac{i \pi}{2 \left( N+1 \right)} \right) \right)}{1 - \fdif{t} \theta_1 \left( \alpha + 2 \sqrt{\beta \gamma} - 4 \sqrt{\beta \gamma} \sin^2\left( \frac{i \pi}{2 \left( N+1 \right)} \right) \right)}} \\
+                                 & \geqslant \abs*{1 + \frac{\fdif{t} \left( \alpha + 2 \sqrt{\beta \gamma} \right)}{1 - \fdif{t} \theta_1 \left( \alpha + 2 \sqrt{\beta \gamma} \right)}}
+\end{align*}
+Therefore,
+\begin{equation*}
+    \abs*{1 + \frac{\fdif{t} \left( \alpha + 2 \sqrt{\beta \gamma} \right)}{1 - \fdif{t} \theta_1 \left( \alpha + 2 \sqrt{\beta \gamma} \right)}} \leqslant \rho\left( \symbf{T} \right) < 1 \implies -1 < 1 + \frac{\fdif{t} \left( \alpha + 2 \sqrt{\beta \gamma} \right)}{1 - \fdif{t} \theta_1 \left( \alpha + 2 \sqrt{\beta \gamma} \right)} < 1.
+\end{equation*}
+We need only to consider the upper bound for \(\fdif{t}\), as the lower
+bound is trivially satisfied for all \(\fdif{t} > 0\). Thus, we have
+\begin{align*}
+    -1                                                                                   & < 1 + \frac{\fdif{t} \left( \alpha + 2 \sqrt{\beta \gamma} \right)}{1 - \fdif{t} \theta_1 \left( \alpha + 2 \sqrt{\beta \gamma} \right)} \\
+    -2 + 2 \fdif{t} \theta_1 \left( \alpha + 2 \sqrt{\beta \gamma} \right)               & < \fdif{t} \left( \alpha + 2 \sqrt{\beta \gamma} \right)                                                                                 \\
+    \fdif{t} \left( \alpha + 2 \sqrt{\beta \gamma} \right) \left( 2 \theta_1 - 1 \right) & < 2                                                                                                                                      \\
+    \fdif{t}                                                                             & > \frac{2}{\left( \alpha + 2 \sqrt{\beta \gamma} \right) \left( 2 \theta_1 - 1 \right)}.
+\end{align*}
+\section{Monotonicity}
+For a numerical solution to remain physically meaningful, it must be
+monotonic. That is, in the absence of a reaction/source term, an
+increase in the solution at any neighbouring node must not cause a
+decrease in the solution at the current node. Failure to observe this
+may result in oscillations in the numerical solution. Consider the
+diagonal and off-diagonal parts of the LHS of the time-discretisation:
+\begin{align*}
+    \symbf{I} - \fdif{t} \theta_1 \symbf{A} & =
+    \begin{pmatrix}
+        1 - \fdif{t} \theta_1 \alpha & -\fdif{t} \theta_1 \beta     &                           &                              \\
+        -\fdif{t} \theta_1 \gamma    & 1 - \fdif{t} \theta_1 \alpha & \ddots                    &                              \\
+                                     & \ddots                       & \ddots                    & -\fdif{t} \theta_1 \beta     \\
+                                     &                              & -\fdif{t} \theta_1 \gamma & 1 - \fdif{t} \theta_1 \alpha
+    \end{pmatrix}
+    \\
+                                            & =
+    \begin{pmatrix}
+        1 - \fdif{t} \theta_1 \alpha &                              &        &                              \\
+                                     & 1 - \fdif{t} \theta_1 \alpha &        &                              \\
+                                     &                              & \ddots &                              \\
+                                     &                              &        & 1 - \fdif{t} \theta_1 \alpha
+    \end{pmatrix}
+    +
+    \begin{pmatrix}
+        0                         & -\fdif{t} \theta_1 \beta &                           &                          \\
+        -\fdif{t} \theta_1 \gamma & 0                        & \ddots                    &                          \\
+                                  & \ddots                   & \ddots                    & -\fdif{t} \theta_1 \beta \\
+                                  &                          & -\fdif{t} \theta_1 \gamma & 0
+    \end{pmatrix}
+    \\
+                                            & = \left( 1 - \fdif{t} \theta_1 \alpha \right) \symbf{I} +
+    \begin{pmatrix}
+        0                         & -\fdif{t} \theta_1 \beta &                           &                          \\
+        -\fdif{t} \theta_1 \gamma & 0                        & \ddots                    &                          \\
+                                  & \ddots                   & \ddots                    & -\fdif{t} \theta_1 \beta \\
+                                  &                          & -\fdif{t} \theta_1 \gamma & 0
+    \end{pmatrix}
+    .
+\end{align*}
+The off-diagonal part of the matrix can be expressed as the difference
+of the original matrix and a diagonal matrix:
+\begin{align*}
+    \begin{pmatrix}
+        0                         & -\fdif{t} \theta_1 \beta &                           &                          \\
+        -\fdif{t} \theta_1 \gamma & 0                        & \ddots                    &                          \\
+                                  & \ddots                   & \ddots                    & -\fdif{t} \theta_1 \beta \\
+                                  &                          & -\fdif{t} \theta_1 \gamma & 0
+    \end{pmatrix}
+     & = \symbf{I} - \fdif{t} \theta_1 \symbf{A} - \left( 1 - \fdif{t} \theta_1 \alpha \right) \symbf{I} \\
+     & = \symbf{I} - \fdif{t} \theta_1 \symbf{A} - \symbf{I} + \fdif{t} \theta_1 \alpha \symbf{I}        \\
+     & = -\fdif{t} \theta_1 \left( \symbf{A} - \alpha \symbf{I} \right).
+\end{align*}
+Therefore,
+\begin{align*}
+    \left( \symbf{I} - \fdif{t} \theta_1 \symbf{A} \right) \symbf{u}^{\left( n+1 \right)}                                                                               & = \left[ \symbf{I} + \fdif{t} \left( 1 - \theta_1 \right) \symbf{A} \right] \symbf{u}^{\left( n \right)} + \tilde{\symbf{b}}                                                                                                 \\
+    \left[ \left( 1 - \fdif{t} \theta_1 \alpha \right) \symbf{I} - \fdif{t} \theta_1 \left( \symbf{A} - \alpha \symbf{I} \right) \right] \symbf{u}^{\left( n+1 \right)} & = \left[ \symbf{I} + \fdif{t} \left( 1 - \theta_1 \right) \symbf{A} \right] \symbf{u}^{\left( n \right)} + \tilde{\symbf{b}}                                                                                                 \\
+    \left( 1 - \fdif{t} \theta_1 \alpha \right) \symbf{u}^{\left( n+1 \right)}                                                                                          & = \fdif{t} \theta_1 \left( \symbf{A} - \alpha \symbf{I} \right) \symbf{u}^{\left( n+1 \right)} + \left[ \symbf{I} + \fdif{t} \left( 1 - \theta_1 \right) \symbf{A} \right] \symbf{u}^{\left( n \right)} + \tilde{\symbf{b}}.
+\end{align*}
+Let us consider the individual elements of the two matrix terms on the RHS:
+\begin{align*}
+    \fdif{t} \theta_1 \left( \symbf{A} - \alpha \symbf{I} \right) & = \fdif{t} \theta_1
+    \begin{pmatrix}
+        0      & \beta  &        &       \\
+        \gamma & 0      & \ddots &       \\
+               & \ddots & \ddots & \beta \\
+               &        & \gamma & 0
+    \end{pmatrix}
+    ,
+    \\
+    \symbf{I} + \fdif{t} \left( 1 - \theta_1 \right) \symbf{A}    & = \symbf{I} + \fdif{t} \left( 1 - \theta_1 \right)
+    \begin{pmatrix}
+        \alpha & \beta  &        &        \\
+        \gamma & \alpha & \ddots &        \\
+               & \ddots & \ddots & \beta  \\
+               &        & \gamma & \alpha
+    \end{pmatrix}
+    .
+\end{align*}
+For the solution of this equation to be monotonic, all coefficients of
+\(\symbf{u}\) must be non-negative:
+\begin{gather*}
+    1 - \fdif{t} \theta_1 \alpha \geqslant 0, \\
+    \fdif{t} \theta_1 \beta \geqslant 0, \qquad \fdif{t} \theta_1 \gamma \geqslant 0, \\
+    1 + \fdif{t} \left( 1 - \theta_1 \right) \alpha \geqslant 0, \quad 1 + \fdif{t} \left( 1 - \theta_1 \right) \beta \geqslant 0, \quad 1 + \fdif{t} \left( 1 - \theta_1 \right) \gamma \geqslant 0.
+\end{gather*}
+From the second row, both \(\beta\) and \(\gamma\) must be non-negative.
+Therefore, the time step \(\fdif{t}\) must satisfy the following
+conditions:
+\begin{equation*}
+    \fdif{t} \geqslant \frac{1}{\theta_1 \alpha}, \quad \fdif{t} \geqslant \frac{1}{\left( 1 - \theta_1 \right) \alpha}, \quad \fdif{t} \geqslant \frac{1}{\left( 1 - \theta_1 \right) \beta}, \quad \fdif{t} \geqslant \frac{1}{\left( 1 - \theta_1 \right) \gamma}.
+\end{equation*}
+\section{Finite Volume Method in 1D}
+Let us define the following geometric quantities (for the
+vertex-centred control volume strategy):
 \begin{figure}[H]
     \centering
     \includegraphics[width = \linewidth]{figures/1d-fvm.pdf}
@@ -399,121 +666,152 @@ likewise, the flux term becomes,
     \int_{\Omega_i} \left( \symbf{\nabla} \cdot \symbf{q} \right) \odif{V} & = \int_{w_i}^{e_i} \pdv{q}{x} \odif{x} \\
                                                                            & = q_{e_i} - q_{w_i}
 \end{align*}
-Then using the strategy outlined in the previous section, we find:
+so that
 \begin{equation*}
-    \odv{u_i}{t} = \frac{1}{V_i} \left( q_{w_i} - q_{e_i} \right) + R_i
+    \odv{u_i}{t} = \frac{1}{V_i} \left( q_{w_i} - q_{e_i} \right) + R_i.
 \end{equation*}
-where \(u_i \approx \bar{u}_i\) and \(R_i \approx \bar{R}_i\). This equation
-can now be used to solve an initial-boundary value problem using the FVM.
-This is done by applying the finite-difference method at internal nodes,
-using:
+\subsection{Finite Differences}
+\subsubsection{Internal Nodes}
+We can apply the finite-difference method at internal nodes, using:
 \begin{align*}
-    \pdv{u}{x}\left( w_i,\: t \right) & = \frac{u_i - u_{i-1}}{h_{i-1}} \\
-    \pdv{u}{x}\left( e_i,\: t \right) & = \frac{u_{i+1} - u_i}{h_i}
+    u\left( w_i,\: t \right) & = \left( 1 - \sigma \right)  u_{i-1} + \sigma u_i & \pdv{u}{x}\left( w_i,\: t \right) & = \frac{u_i - u_{i-1}}{h_{i-1}} &  & \text{(west node)} \\
+    u\left( e_i,\: t \right) & = \left( 1 - \sigma \right)  u_i + \sigma u_{i+1} & \pdv{u}{x}\left( e_i,\: t \right) & = \frac{u_{i+1} - u_i}{h_i}     &  & \text{(east node)}
 \end{align*}
-and at boundary nodes, using the boundary conditions:
+for weights \(0 \leqslant \sigma \leqslant 1\). The choice
+\(\sigma = 1/2\) is known as \textit{averaging}, as it produces
+\begin{equation*}
+    u\left( w_i,\: t \right) = \frac{u_{i-1} + u_i}{2}, \qquad u\left( e_i,\: t \right) = \frac{u_i + u_{i+1}}{2}.
+\end{equation*}
+When \(v > 0\), then the flow is from left to right, and we choose \(\sigma
+= 0\), so that
+\begin{equation*}
+    u\left( w_i,\: t \right) \approx u_{i-1}, \qquad u\left( e_i,\: t \right) \approx u_i.
+\end{equation*}
+When \(v < 0\), then the flow is from right to left, and we choose
+\(\sigma = 1\), so that
+\begin{equation*}
+    u\left( w_i,\: t \right) \approx u_i, \qquad u\left( e_i,\: t \right) \approx u_{i+1}.
+\end{equation*}
+This is known as \textit{upwinding}. Numerical solutions obtained using
+upwinding exhibit \textit{numerical diffusion} or \textit{false diffusion}
+as we can rewrite the diffusivity in the upwinding method using the
+diffusivity from the averaging method:
+\(D_{\text{upwinding}} = D_{\text{avg}} + c\), where \(c\) is some
+constant made up of the model parameters.
+\subsubsection{Boundary Nodes}
+At boundary nodes, we can use boundary conditions to approximate
+\(\pdv{u}{x}\) at the boundaries:
 \begin{align*}
     \pdv{u}{x}\left( w_1,\: t \right) & = \pdv{u}{x}\left( 0,\: t \right) & \pdv{u}{x}\left( e_1,\: t \right) & = \frac{u_2 - u_1}{h_1}           &  & \text{(left boundary)}  \\
     \pdv{u}{x}\left( w_N,\: t \right) & = \frac{u_N - u_{N-1}}{h_{N-1}}   & \pdv{u}{x}\left( e_N,\: t \right) & = \pdv{u}{x}\left( L,\: t \right) &  & \text{(right boundary)}
 \end{align*}
-we find a linear ODE of the form:
-\begin{equation*}
-    \odv{\symbf{u}}{t} = \symbf{A} \symbf{u} + \symbf{b}\left( t \right), \qquad \symbf{u}\left( 0 \right) = \symbf{u}^{\left( 0 \right)}
-\end{equation*}
-where \(\symbf{u} = {\left( u_1,\: \dots,\: u_N \right)}^\top\) is the
-numerical solution vector at time \(t\) containing the solution at each
-node \(x_i\) and \(\symbf{u}^{\left( 0 \right)} = {\left( f\left( x_1 \right),\: \dots,\: f\left( x_N \right) \right)}^\top\)
-is the initial solution vector.
-
-\(\symbf{A} \in \R^{N \times N}\) is a tridiagonal matrix containing
-the coefficients of the finite-difference method, and
-\(\symbf{b}\left( t \right)\) contains any time-dependent terms in the
-transport equation. This ODE can be solved using standard ODE solving
-techniques. When the transport equation is nonlinear, the RHS cannot
-be written as a matrix-vector product, so that
-\begin{equation*}
-    \odv{\symbf{u}}{t} = \symbf{F}\left( t,\: \symbf{u}\left( t \right) \right).
-\end{equation*}
+\subsubsection{Nonlinear Diffusivity}
+If the diffusivity is a nonlinear function of \(u\), then we can use
+the following averaging approximations:
+\begin{align*}
+    D\left( u\left( x_i,\: t \right) \right) & = D\left( u_i \right)                                     &  & \text{(current node)} \\
+    D\left( u\left( w_i,\: t \right) \right) & = \frac{D\left( u_{i-1} \right) + D\left( u_i \right)}{2} &  & \text{(west node)}    \\
+    D\left( u\left( e_i,\: t \right) \right) & = \frac{D\left( u_i \right) + D\left( u_{i+1} \right)}{2} &  & \text{(east node)}
+\end{align*}
 \subsection{Time Discretisation}
-The resulting ODE can be solved using a time-stepping method such as
-the Forward Euler, the Backward Euler, or the Crank-Nicolson methods.
-To solve this initial value problem, we will consider a sufficiently
-large final time, \(T\), so that the problem is solved between \(t =
-0\) and \(t = T\). Then, we will discretise the time domain into \(M\)
-time steps of size \(\fdif{t} = T/M = t_{n+1} - t_n\), such that \(t_n
-= n \fdif{t}\) for \(n = 0,\: 1,\: \ldots,\: M\).
-
-Let us rewrite the ODE in the equivalent form:
-\begin{equation*}
-    \odv{\symbf{u}}{t} = \symbf{A} \symbf{u} + \symbf{b}_1 + \symbf{b}_2\left( t \right), \qquad \symbf{u}\left( 0 \right) = \symbf{u}^{\left( 0 \right)}
-\end{equation*}
-such that \(\symbf{b}_2\left( t \right) = {\left( R\left( x_1,\: t \right),\: \dots,\: R\left( x_N,\: t \right) \right)}^\top\)
-is the time-dependent flux term, and \(\symbf{b}_1 = \symbf{b}\left( t \right) - \symbf{b}_2\left( t \right)\)
-contains the time-independent reaction term. We will now compute
-\(\symbf{u}^{\left( n \right)} = {\left( u_1^{\left( n \right)},\: \dots,\: u_N^{\left( n \right)} \right)}^\top\),
-where \(u_i^{\left( n \right)} \approx u_i\left( t_n \right) = u\left( x_i,\: t_n \right)\),
-is the solution at \(x = x_i\) and time \(t = t_n\), using the
-\(\theta\)-method.
-
-Let us first integrate the ODE over the time interval
-\(\ointerval{t_n}{t_{n+1}}\):
+We can compute \(u_i^{\left( n \right)} = u_i\left( t_n \right) =
+u\left( x_i,\: t_n \right)\) by integrating the above ODE over the time
+interval \(\ointerval{t_n}{t_{n+1}}\):
 \begin{align*}
-    \int_{t_n}^{t_{n+1}} \odv{\symbf{u}}{t} \odif{t}              & = \int_{t_n}^{t_{n+1}} \left( \symbf{A} \symbf{u} + \symbf{b}_1 + \symbf{b}_2\left( t \right) \right) \odif{t}                                              \\
-    \symbf{u}\left( t_{n+1} \right) - \symbf{u}\left( t_n \right) & = \symbf{A} \int_{t_n}^{t_{n+1}} \symbf{u} \odif{t} + \int_{t_n}^{t_{n+1}} \symbf{b}_1 \odif{t} + \int_{t_n}^{t_{n+1}} \symbf{b}_2\left( t \right) \odif{t} \\
-    \symbf{u}^{\left( n+1 \right)} - \symbf{u}^{\left( n \right)} & = \symbf{A} \int_{t_n}^{t_{n+1}} \symbf{u} \odif{t} + \symbf{b}_1 \left( t_{n+1} - t_n \right) + \int_{t_n}^{t_{n+1}} \symbf{b}_2\left( t \right) \odif{t}
-\end{align*}
-To integrate the time-dependent terms, we will use the weighted \(\theta\)
-approximation, where
-\begin{equation*}
-    \int_{t_n}^{t_{n+1}} f\left( t \right) \odif{t} \approx \fdif{t} \left[ \left( 1 - \theta \right) f\left( t_n \right) + \theta f\left( t_{n+1} \right) \right].
-\end{equation*}
-Therefore, we have
-\begin{align*}
-    \symbf{u}^{\left( n+1 \right)} - \symbf{u}^{\left( n \right)}                               & = \fdif{t} \symbf{A} \left[ \left( 1 - \theta_1 \right) \symbf{u}^{\left( n \right)} + \theta_1 \symbf{u}^{\left( n+1 \right)} \right] + \symbf{b}_1 \fdif{t} + \fdif{t} \left[ \left( 1 - \theta_2 \right) \symbf{b}_2^{\left( n \right)} + \theta_2 \symbf{b}_2^{\left( n+1 \right)} \right] \\
-    \symbf{u}^{\left( n+1 \right)} - \symbf{A} \theta_1 \fdif{t} \symbf{u}^{\left( n+1 \right)} & = \symbf{u}^{\left( n \right)} + \fdif{t} \left( 1 - \theta_1 \right) \symbf{A} \symbf{u}^{\left( n \right)} + \fdif{t} \symbf{b}_1 + \fdif{t} \left[ \left( 1 - \theta_2 \right) \symbf{b}_2^{\left( n \right)} + \theta_2 \symbf{b}_2^{\left( n+1 \right)} \right]                           \\
-    \left( \symbf{I} - \fdif{t} \theta_1 \symbf{A} \right) \symbf{u}^{\left( n+1 \right)}       & = \left[ \symbf{I} + \fdif{t} \left( 1 - \theta_1 \right) \symbf{A} \right] \symbf{u}^{\left( n \right)} + \fdif{t} \left[ \symbf{b}_1 + \left( 1 - \theta_2 \right) \symbf{b}_2^{\left( n \right)} + \theta_2 \symbf{b}_2^{\left( n+1 \right)} \right] \\
-    \tilde{\symbf{A}} \symbf{u}^{\left( n+1 \right)}                                              & = \tilde{\symbf{b}}
-\end{align*}
-for two choices of \(\theta_1\) and \(\theta_2\).
-Setting \(\theta_1 = \theta_2 = 0\), we obtain the Forward Euler method:
-\begin{equation*}
-    \symbf{u}^{\left( n+1 \right)} = \left( \symbf{I} + \fdif{t} \symbf{A} \right) \symbf{u}^{\left( n \right)} + \fdif{t} \left( \symbf{b}_1 + \symbf{b}_2^{\left( n \right)} \right)
-\end{equation*}
-which is an explicit method. Setting \(\theta_1 = \theta_2 = 1\), yields
-the Backward Euler method:
-\begin{equation*}
-    \left( \symbf{I} - \fdif{t} \symbf{A} \right) \symbf{u}^{\left( n+1 \right)} = \symbf{u}^{\left( n \right)} + \fdif{t} \left( \symbf{b}_1 + \symbf{b}_2^{\left( n+1 \right)} \right)
-\end{equation*}
-while setting \(\theta_1 = \theta_2 = \frac{1}{2}\) gives the Crank-Nicolson
-method:
-\begin{equation*}
-    \left( \symbf{I} - \frac{\fdif{t}}{2} \symbf{A} \right) \symbf{u}^{\left( n+1 \right)} = \left( \symbf{I} + \frac{\fdif{t}}{2} \symbf{A} \right) \symbf{u}^{\left( n \right)} + \frac{\fdif{t}}{2} \left( 2 \symbf{b}_1 + \symbf{b}_2^{\left( n \right)} + \symbf{b}_2^{\left( n+1 \right)} \right)
-\end{equation*}
-which are both implicit methods. Using different values for \(\theta_1\)
-and \(\theta_2\) is also possible, and is called the IMEX method (Implicit-Explicit).
-\subsection{Time Discretisation for the 1D FVM}
-We can apply the same time discretisation to the 1D FVM. Let us
-consider the 1D FVM with the following ODE:
-\begin{equation*}
-    \odv{u_i}{t} = \frac{1}{V_i} \left( q_{w_i} - q_{e_i} \right) + R_i
-\end{equation*}
-where \(u_i \approx \bar{u}_i\) and \(R_i \approx \bar{R}_i\). We will
-now compute \(u_i^{\left( n \right)} = u_i\left( t_n \right) = u\left( x_i,\: t_n \right)\)
-using the \(\theta\)-method. We will first integrate the ODE over the
-time interval \(\ointerval{t_n}{t_{n+1}}\):
-\begin{align*}
-    \int_{t_n}^{t_{n+1}} \odv{u_i}{t} \odif{t}        & = \int_{t_n}^{t_{n+1}} \left( \frac{1}{V_i} \left( q_{w_i} - q_{e_i} \right) + R_i \right) \odif{t}                                                                                                                                                                                                              \\
-    u_i\left( t_{n+1} \right) - u_i\left( t_n \right) & = \frac{1}{V_i} \int_{t_n}^{t_{n+1}} q_{w_i} - q_{e_i} \odif{t} + \int_{t_n}^{t_{n+1}} R_i \odif{t}                                                                                                                                                                                                              \\
-    u_i^{\left( n+1 \right)} - u_i^{\left( n \right)} & = \begin{aligned}[t]
-        &{}\frac{\fdif{t}}{V_i} \left[ \left( 1 - \theta_1 \right) \left( q_{w_i}^{\left( n \right)} - q_{e_i}^{\left( n \right)} \right) + \theta_1 \left( q_{w_i}^{\left( n+1 \right)} - q_{e_i}^{\left( n+1 \right)} \right) \right] \\
-        &{}+ \fdif{t} \left[ \left( 1 - \theta_2 \right) R_i^{\left( n \right)} + \theta_2 R_i^{\left( n+1 \right)} \right]
+    \int_{t_n}^{t_{n+1}} \odv{u_i}{t} \odif{t}        & = \int_{t_n}^{t_{n+1}} \left( \frac{1}{V_i} \left( q_{w_i} - q_{e_i} \right) + R_i \right) \odif{t} \\
+    u_i\left( t_{n+1} \right) - u_i\left( t_n \right) & = \frac{1}{V_i} \int_{t_n}^{t_{n+1}} q_{w_i} - q_{e_i} \odif{t} + \int_{t_n}^{t_{n+1}} R_i \odif{t} \\
+    u_i^{\left( n+1 \right)} - u_i^{\left( n \right)} & =
+    \begin{aligned}[t]
+         & {}\frac{\fdif{t}}{V_i} \left[ \left( 1 - \theta_1 \right) \left( q_{w_i}^{\left( n \right)} - q_{e_i}^{\left( n \right)} \right) + \theta_1 \left( q_{w_i}^{\left( n+1 \right)} - q_{e_i}^{\left( n+1 \right)} \right) \right] \\
+         & {}+ \fdif{t} \left[ \left( 1 - \theta_2 \right) R_i^{\left( n \right)} + \theta_2 R_i^{\left( n+1 \right)} \right].
     \end{aligned}
 \end{align*}
-\subsection{Dirichlet Boundary Conditions}
-Given the above linear system, we can also modify the system to account
-for Dirichlet boundary conditions rather than Neumann boundary conditions
-by replacing the first row of the matrix \(\tilde{\symbf{A}}\) with
-\({\left( 1,\: 0,\: \dots,\: 0 \right)} \in \R^{1 \times N}\) and
-the first element of the RHS vector \(\tilde{\symbf{b}}\) with the Dirichlet
-boundary condition.
+\part{Newton Methods}
+Consider the nonlinear form of the time-dependent ODE, which arises
+when \(D\) or \(R\) are nonlinear functions of \(u\):
+\begin{equation*}
+    \odv{u}{t} = \symbf{F}\left( u \right).
+\end{equation*}
+If we were to use the \(\theta\)-method, we find that the solution requires
+iterating over the solution \(M-2\) times:
+\begin{equation*}
+    \symbf{u}^{\left( n+1 \right)} - \symbf{u}^{\left( n \right)} = \fdif{t} \left[ \theta_1 \symbf{F}\left( \symbf{u}^{\left( n+1 \right)} \right) + \left( 1 - \theta_1 \right) \symbf{F}\left( \symbf{u}^{\left( n \right)} \right) \right].
+\end{equation*}
+This is very inefficient, and therefore we will consider Newton's method
+to solve a nonlinear partial differential equation.
+\section{Newton's Method}
+Newton's method is an iterative method for finding the roots of a
+nonlinear function.
+\subsection{Scalar Function}
+Given a scalar function \(f\left( x \right)\), we can approximate the
+root of this function by linearising the function about a guess
+\(x^{\left( k \right)}\):
+\begin{align*}
+    f\left( x \right)      & \approx f\left( x^{\left( k \right)} \right) + f'\left( x^{\left( k \right)} \right) \left( x - x^{\left( k \right)} \right) \\
+    0                      & \approx f\left( x^{\left( k \right)} \right) + f'\left( x^{\left( k \right)} \right) \left( x - x^{\left( k \right)} \right) \\
+    x^{\left( k+1 \right)} & = x^{\left( k \right)} - \frac{f\left( x^{\left( k \right)} \right)}{f'\left( x^{\left( k \right)} \right)}.
+\end{align*}
+\subsection{Vector Function}
+Given a system of nonlinear equations, expressed by the vector function
+\(\symbf{F}\left( \symbf{x} \right)\), we can use the same
+linearisation technique to find the root of this function:
+\begin{align*}
+    \begin{bmatrix}
+        F_1\left( \symbf{x} \right) \\
+        F_2\left( \symbf{x} \right) \\
+        \vdots                      \\
+        F_n\left( \symbf{x} \right)
+    \end{bmatrix}
+                                      & \approx
+    \begin{bmatrix}
+        F_1\left( \symbf{x}^{\left( k \right)} \right) \\
+        F_2\left( \symbf{x}^{\left( k \right)} \right) \\
+        \vdots                                         \\
+        F_n\left( \symbf{x}^{\left( k \right)} \right)
+    \end{bmatrix}
+    +
+    \begin{bmatrix}
+        \symbf{\nabla} F_1\left( \symbf{x}^{\left( k \right)} \right)^\top \\
+        \symbf{\nabla} F_2\left( \symbf{x}^{\left( k \right)} \right)^\top \\
+        \vdots                                                             \\
+        \symbf{\nabla} F_n\left( \symbf{x}^{\left( k \right)} \right)^\top
+    \end{bmatrix}
+    \left( \symbf{x} - \symbf{x}^{\left( k \right)} \right)                                                                                                                                                         \\
+    \symbf{F}\left( \symbf{x} \right) & \approx \symbf{F}\left( \symbf{x}^{\left( k \right)} \right) + \symbf{J}\left( \symbf{x}^{\left( k \right)} \right) \left( \symbf{x} - \symbf{x}^{\left( k \right)} \right) \\
+    \symbf{0}                         & \approx \symbf{F}\left( \symbf{x}^{\left( k \right)} \right) + \symbf{J}\left( \symbf{x}^{\left( k \right)} \right) \left( \symbf{x} - \symbf{x}^{\left( k \right)} \right) \\
+    \symbf{x}^{\left( k+1 \right)}    & = \symbf{x}^{\left( k \right)} - \symbf{J}\left( \symbf{x}^{\left( k \right)} \right)^{-1} \symbf{F}\left( \symbf{x}^{\left( k \right)} \right).
+\end{align*}
+To avoid the matrix inverse, we can instead use the update rule
+\begin{equation*}
+    \symbf{x}^{\left( k+1 \right)} = \symbf{x}^{\left( k \right)} + \symbf{\delta} \symbf{x}^{\left( k \right)}
+\end{equation*}
+where \(\symbf{\delta} \symbf{x}^{\left( k \right)}\) is the solution to
+the linear system
+\begin{equation*}
+    \symbf{J}\left( \symbf{x}^{\left( k \right)} \right) \left( \symbf{\delta} \symbf{x}^{\left( k \right)} \right) = -\symbf{F}\left( \symbf{x}^{\left( k \right)} \right).
+\end{equation*}
+The vector \(\symbf{\delta} \symbf{x}^{\left( k \right)}\) is known as
+the \textbf{Newton correction}. We can define the stopping criterion for
+the Newton method as
+\begin{equation*}
+    \norm*{\symbf{F}\left( \symbf{x}^{\left( k + 1 \right)} \right)} \leqslant \text{rtol}\ \norm*{\symbf{F}\left( \symbf{x}^{\left( 0 \right)} \right)} + \text{atol}.
+\end{equation*}
+\section{Modified Newton Methods}
+\subsection{Chord Method}
+To avoid the computation of the Jacobian at every iteration, we can
+compute the Jacobian at only the first iteration:
+\begin{equation*}
+    \symbf{x}^{\left( k+1 \right)} = \symbf{x}^{\left( k \right)} - \symbf{J}\left( \symbf{x}^{\left( 0 \right)} \right)^{-1} \symbf{F}\left( \symbf{x}^{\left( k \right)} \right).
+\end{equation*}
+Using the alternate form shown in the previous section, we can write
+this as:
+\begin{equation*}
+    \symbf{x}^{\left( k+1 \right)} = \symbf{x}^{\left( k \right)} + \symbf{\delta} \symbf{x}^{\left( 0 \right)}
+\end{equation*}
+where \(\symbf{\delta} \symbf{x}^{\left( 0 \right)}\) is the solution to
+the linear system
+\begin{equation*}
+    \symbf{J}\left( \symbf{x}^{\left( 0 \right)} \right) \left( \symbf{\delta} \symbf{x}^{\left( 0 \right)} \right) = -\symbf{F}\left( \symbf{x}^{\left( k \right)} \right).
+\end{equation*}
+
 \end{document}
