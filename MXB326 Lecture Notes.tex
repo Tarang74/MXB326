@@ -355,7 +355,7 @@ finite-difference method, and \(\symbf{b}\left( t \right)\) contains any
 time-dependent terms in the transport equation. Note that when the
 transport equation is nonlinear, it is expressed as
 \begin{equation*}
-    \odv{\symbf{u}}{t} = \symbf{F}\left( t,\: \symbf{u}\left( t \right) \right).
+    \odv{\symbf{u}}{t} = \symbf{G}\left( t,\: \symbf{u}\left( t \right) \right).
 \end{equation*}
 \section{Time Discretisation}
 This time-dependent ODE can be solved using the \(\theta\)-methods.
@@ -730,15 +730,32 @@ interval \(\ointerval{t_n}{t_{n+1}}\):
 Consider the nonlinear form of the time-dependent ODE, which arises
 when \(D\) or \(R\) are nonlinear functions of \(u\):
 \begin{equation*}
-    \odv{u}{t} = \symbf{F}\left( u \right).
+    \odv{u}{t} = \symbf{G}\left( u \right).
 \end{equation*}
 If we were to use the \(\theta\)-method, we find that the solution requires
 iterating over the solution \(M-2\) times:
 \begin{equation*}
-    \symbf{u}^{\left( n+1 \right)} - \symbf{u}^{\left( n \right)} = \fdif{t} \left[ \theta_1 \symbf{F}\left( \symbf{u}^{\left( n+1 \right)} \right) + \left( 1 - \theta_1 \right) \symbf{F}\left( \symbf{u}^{\left( n \right)} \right) \right].
+    \symbf{u}^{\left( n+1 \right)} - \symbf{u}^{\left( n \right)} = \fdif{t} \left[ \theta_1 \symbf{G}\left( \symbf{u}^{\left( n+1 \right)} \right) + \left( 1 - \theta_1 \right) \symbf{G}\left( \symbf{u}^{\left( n \right)} \right) \right].
 \end{equation*}
-This is very inefficient, and therefore we will consider Newton's method
-to solve a nonlinear partial differential equation.
+Let us consider an iterative approach where we approximate the solution
+\(\symbf{u}^{\left( n+1 \right)}\) at every time step \(n\) by finding
+the root of the vector function:
+\begin{align*}
+    \symbf{x} - \symbf{u}^{\left( n \right)} - \fdif{t} \left[ \theta_1 \symbf{G}\left( \symbf{x} \right) + \left( 1 - \theta_1 \right) \symbf{G}\left( \symbf{u}^{\left( n \right)} \right) \right] & = \symbf{0}  \\
+    \symbf{F}\left( \symbf{x} \right)                                                                                                                                                                & = \symbf{0}.
+\end{align*}
+The initial guess for this algorithm will be the solution at the previous
+time step:
+\begin{equation*}
+    \symbf{x}^{\left( 0 \right)} = \symbf{u}^{\left( n \right)}
+\end{equation*}
+so that when Newton's method converges, the root after \(k\) iterations
+approximates the solution at the next time step:
+\begin{equation*}
+    \symbf{u}^{\left( n+1 \right)} = \symbf{x}^{\left( k \right)}.
+\end{equation*}
+This is repeated until an approximate solution is obtained at each time
+step.
 \section{Newton's Method}
 Newton's method is an iterative method for finding the roots of a
 nonlinear function.
@@ -813,5 +830,187 @@ the linear system
 \begin{equation*}
     \symbf{J}\left( \symbf{x}^{\left( 0 \right)} \right) \left( \symbf{\delta} \symbf{x}^{\left( 0 \right)} \right) = -\symbf{F}\left( \symbf{x}^{\left( k \right)} \right).
 \end{equation*}
-
+\subsection{Shamanskii Method}
+Alternatively, the Jacobian matrix may be \textit{periodically} updated
+every \(m\) iterations. The Shamanskii method is the most general form
+of Newton's method, where the original form of Newton's method is
+recovered when \(m = 1\), and the Chord method is recovered when \(m
+\to \infty\).
+\section{Convergence Theory}
+The sequence \(\left\{ \symbf{x}^{\left( k \right)} \right\}_{k =
+0}^\infty\) converges with limit \(\symbf{x}^\ast\) if:
+\begin{equation*}
+    \lim_{k \to \infty} \norm*{\symbf{x}^{\left( k \right)} - \symbf{x}^\ast} = 0.
+\end{equation*}
+The following definitions and theorems will be used throughout this
+section to discuss the convergence of the Newton methods discussed
+previously.
+\subsection{Convergent Sequences}
+\begin{definition}[Convergent sequence]
+    A sequence \(\left\{ \symbf{x}^{\left( k \right)} \right\}_{k = 0}^\infty\)
+    of vectors in \(\R^n\) is convergent with limit \(\symbf{x}^\ast\)
+    if for every \(\epsilon > 0\), there exists an integer \(M\) such that
+    \begin{equation*}
+        \norm*{\symbf{x}^{\left( k \right)} - \symbf{x}^\ast} < \epsilon,
+    \end{equation*}
+    for all \(k > M\).
+\end{definition}
+\begin{definition}[Cauchy sequence]
+    A sequence \(\left\{ \symbf{x}^{\left( k \right)} \right\}_{k = 0}^\infty\)
+    of vectors in \(\R^n\) is a \textbf{Cauchy sequence} if for every
+    \(\epsilon > 0\), there exists an integer \(M\) such that
+    \begin{equation*}
+        \norm*{\symbf{x}^{\left( k \right)} - \symbf{x}^{\left( m \right)}} < \epsilon,
+    \end{equation*}
+    for all \(k,m > M\).
+\end{definition}
+A sequence of vectors in \(\R^n\) is Cauchy if and only if it converges.
+\begin{definition}[Rate of Convergence]
+    Let \(\left\{ \symbf{x}^{\left( k \right)} \right\}_{k = 0}^\infty\)
+    be a convergent sequence of vectors in \(\R^n\) with limit \(\symbf{x}^\ast\).
+    The sequence converges
+    \begin{itemize}
+        \item \textbf{quadratically} if there exists a \(K > 0\) such that
+              \begin{equation*}
+                  \norm*{\symbf{x}^{\left( k+1 \right)} - \symbf{x}^\ast} \leqslant K \norm*{\symbf{x}^{\left( k \right)} - \symbf{x}^\ast}^2
+              \end{equation*}
+        \item \textbf{superlinearly} with order \(\alpha \in \ointerval{1}{2}\) if there exists a \(K > 0\) such that
+              \begin{equation*}
+                  \norm*{\symbf{x}^{\left( k+1 \right)} - \symbf{x}^\ast} \leqslant K \norm*{\symbf{x}^{\left( k \right)} - \symbf{x}^\ast}^\alpha
+              \end{equation*}
+        \item \textbf{linearly} with factor \(\sigma \in \ointerval{0}{1}\) if
+              \begin{equation*}
+                  \norm*{\symbf{x}^{\left( k+1 \right)} - \symbf{x}^\ast} \leqslant \alpha \norm*{\symbf{x}^{\left( k \right)} - \symbf{x}^\ast}
+              \end{equation*}
+    \end{itemize}
+    for a sufficiently large \(k\).
+\end{definition}
+\begin{theorem}
+    Let \(\symbf{F} :  D \to \R^n\) be differentiable on an open subset
+    \(D \subset \R^n\) and let \(\symbf{x} \in D\). Then, for any nonzero
+    vector \(\symbf{h}\), such that \(\symbf{x} + \symbf{h} \in D\), we
+    have
+    \begin{equation*}
+        \symbf{F}\left( \symbf{x} + \symbf{h} \right) = \symbf{F}\left( \symbf{x} \right) + \int_0^1 \symbf{J}\left( \symbf{x} + t \symbf{h} \right) \symbf{h} \odif{t}
+    \end{equation*}
+    where \(\symbf{J}\) is the Jacobian matrix of \(\symbf{F}\).
+\end{theorem}
+\begin{proof}
+    Consider the parameterisation \(\symbf{F}\left( \symbf{x} + t \symbf{h} \right)\),
+    then,
+    \begin{equation*}
+        \pdv{\symbf{F}\left( \symbf{x} + t \symbf{h} \right)}{t} = \pdv{\symbf{F}\left( \symbf{x} + t \symbf{h} \right)}{\left( \symbf{x} + t \symbf{h} \right)} \pdv{\left( \symbf{x} + t \symbf{h} \right)}{t} = \symbf{J}\left( \symbf{x} + t \symbf{h} \right) \symbf{h}.
+    \end{equation*}
+    We can then integrate this result between \(0\) and \(1\):
+    \begin{align*}
+        \int_0^1 \pdv*{\symbf{F}\left( \symbf{x} + t \symbf{h} \right)}{t} \odif{t}       & = \int_0^1 \symbf{J}\left( \symbf{x} + t \symbf{h} \right) \symbf{h} \odif{t}                                      \\
+        \left[ \symbf{F}\left( \symbf{x} + t \symbf{h} \right) \right]_0^1                & = \int_0^1 \symbf{J}\left( \symbf{x} + t \symbf{h} \right) \symbf{h} \odif{t}                                      \\
+        \symbf{F}\left( \symbf{x} + \symbf{h} \right) - \symbf{F}\left( \symbf{x} \right) & = \int_0^1 \symbf{J}\left( \symbf{x} + t \symbf{h} \right) \symbf{h} \odif{t}                                      \\
+        \symbf{F}\left( \symbf{x} + \symbf{h} \right)                                     & = \symbf{F}\left( \symbf{x} \right) + \int_0^1 \symbf{J}\left( \symbf{x} + t \symbf{h} \right) \symbf{h} \odif{t}.
+    \end{align*}
+\end{proof}
+\subsection{Lipschitz Continuity}
+\begin{definition}[Lipschitz continuous]
+    Let \(D \in \R^n\) and \(\symbf{J} : D \to \R^{n \times n}\).
+    \(\symbf{J}\) is \textbf{Lipschitz continuous} on \(D\), with
+    \textbf{Lipschitz constant} \(\gamma\) if
+    \begin{equation*}
+        \norm*{\symbf{J}\left( \symbf{x} \right) - \symbf{J}\left( \symbf{y} \right)} \leqslant \gamma \norm*{\symbf{x} - \symbf{y}}, \quad \forall \symbf{x}, \symbf{y} \in D.
+    \end{equation*}
+    We can denote this as \(\symbf{J} \in \mathrm{Lip}_\gamma\left( D \right)\).
+\end{definition}
+Using this definition, the \textbf{Standard Assumptions of Newton's Method}
+can be described as follows:
+\begin{enumerate}
+    \item \(\symbf{F}\left( \symbf{x} \right) = \symbf{0}\) has a solution \(\symbf{x}^\ast\) on \(D \subset \R^n\).
+    \item \(\symbf{J} \in \mathrm{Lip}_\gamma\left( D \right)\).
+    \item \(\symbf{J}\left( \symbf{x} \right)\) is nonsingular and \(\norm*{\symbf{J}\left( \symbf{x} \right)} \leqslant \beta\) for all \(\symbf{x} \in D\).
+\end{enumerate}
+\begin{theorem}
+    Let \(\symbf{F} : D \to \R^n\) for some open subset \(D \subset \R^n\)
+    and let the standard assumptions hold. Then, there exists some \(\delta\)
+    such that given \(\symbf{x}^{\left( 0 \right)} \in D\) with
+    \(\norm*{\symbf{x}^{\left( 0 \right)} - \symbf{x}^\ast} < \delta\),
+    the Newton iteration
+    \begin{equation*}
+        \symbf{x}^{\left( k + 1 \right)} = \symbf{x}^{\left( k \right)} - \symbf{J}\left( \symbf{x}^{\left( k \right)} \right)^{-1} \symbf{F}\left( \symbf{x}^{\left( k \right)} \right)
+    \end{equation*}
+    satisfies \(\norm*{\symbf{x}^{\left( k \right)} - \symbf{x}^\ast} < \delta\)
+    for all \(k\), and converges quadratically to \(\symbf{x}^\ast\).
+\end{theorem}
+\begin{lemma}
+    Let \(\symbf{F} : D \to \R^n\) for some open subset \(D \subset \R^n\)
+    and let the standard assumptions hold. Then, the local linear model
+    \begin{equation*}
+        \symbf{M}_k\left( \symbf{x} \right) = \symbf{F}\left( \symbf{x}^{\left( k \right)} \right) + \symbf{J}\left( \symbf{x}^{\left( k \right)} \right) \left( \symbf{x} - \symbf{x}^{\left( k \right)} \right)
+    \end{equation*}
+    apprpoximates \(\symbf{F}\left( \symbf{x} \right)\) with error
+    \begin{equation*}
+        \norm*{\symbf{F}\left( \symbf{x} \right) - \symbf{M}_k\left( \symbf{x} \right)} \leqslant \frac{\gamma}{2} \norm*{\symbf{x} - \symbf{x}^{\left( k \right)}}^2.
+    \end{equation*}
+\end{lemma}
+\begin{theorem}
+    Let \(\symbf{F} : D \to \R^n\) for some open subset \(D \subset \R^n\)
+    and let the standard assumptions hold. Then there exists some \(\delta\)
+    such that given \(\symbf{x}^{\left( 0 \right)} \in D\) with
+    \(\norm*{\symbf{x}^{\left( 0 \right)} - \symbf{x}^\ast} < \delta\),
+    the Chord iteration
+    \begin{equation*}
+        \symbf{x}^{\left( k + 1 \right)} = \symbf{x}^{\left( k \right)} - \symbf{J}\left( \symbf{x}^{\left( 0 \right)} \right)^{-1} \symbf{F}\left( \symbf{x}^{\left( k \right)} \right)
+    \end{equation*}
+    satisfies \(\norm*{\symbf{x}^{\left( k \right)} - \symbf{x}^\ast} < \delta\)
+    for all \(k\), and converges linearly to \(\symbf{x}^\ast\).
+\end{theorem}
+\begin{corollary}
+    The Shamanskii method converges superlinearly to \(\symbf{x}^\ast\).
+\end{corollary}
+\section{Inexact Newton Method}
+The derivatives in the Jacobian matrix can be approximated using finite
+differences. Here, the first-order forward difference is used to
+approximate the \(j\)th column of the Jacobian as follows:
+\begin{equation*}
+    \symbf{J}\left( \symbf{x} \right) \symbf{e}_j \approx \tilde{\symbf{J}}\left( \symbf{x} \right) \symbf{e}_j = \frac{\symbf{F}\left( \symbf{x} + \epsilon \symbf{e}_j \right) - \symbf{F}\left( \symbf{x} \right)}{\varepsilon}
+\end{equation*}
+for a suitably small value \(\varepsilon > 0\),
+where \(\symbf{e}_j\) is the \(j\)th standard basis vector.
+The approximation of the Jacobian matrix is denoted
+\(\tilde{\symbf{J}}\left( \symbf{x} \right)\):
+\begin{equation*}
+    \tilde{\symbf{J}}\left( \symbf{x} \right) =
+    \begin{bmatrix}
+        \vertbar                                              &        & \vertbar                                              \\
+        \tilde{\symbf{J}}\left( \symbf{x} \right) \symbf{e}_1 & \cdots & \tilde{\symbf{J}}\left( \symbf{x} \right) \symbf{e}_n \\
+        \vertbar                                              &        & \vertbar
+    \end{bmatrix}.
+\end{equation*}
+The standard choice for the parameter \(\varepsilon\) is
+\begin{equation*}
+    \varepsilon =
+    \begin{cases}
+        \sqrt{\epsilon_M} \norm*{\symbf{x}}_2, & \symbf{x} \neq 0 \\
+        \sqrt{\epsilon_M},                     & \symbf{x} = 0
+    \end{cases}
+\end{equation*}
+where \(\epsilon_M\) is the unit roundoff.
+\begin{theorem}
+    Let \(\symbf{F} : D \to \R^n\) for some open subset \(D \subset \R^n\)
+    and let \(\symbf{J} \in \mathrm{Lip}_\gamma\left( D \right)\), then
+    \begin{equation*}
+        \norm*{\symbf{J}\left( \symbf{x} \right) \symbf{e}_j - \tilde{\symbf{J}}\left( \symbf{x} \right) \symbf{e}_j} \leqslant \frac{\gamma}{2} \varepsilon, \quad 1 \leqslant j \leqslant n,
+    \end{equation*}
+    where \(\tilde{\symbf{J}}\left( \symbf{x} \right)\) approximates
+    \(\symbf{J}\left( \symbf{x} \right)\) using finite differences.
+\end{theorem}
+\begin{theorem}
+    Let \(\symbf{F} : D \to \R^n\) for some open subset \(D \subset \R^n\)
+    and let the standard assumptions hold. Then there exists some \(\delta\)
+    such that given \(\symbf{x}^{\left( 0 \right)} \in D\) with
+    \(\norm*{\symbf{x}^{\left( 0 \right)} - \symbf{x}^\ast} < \delta\),
+    the inexact Newton iteration
+    \begin{equation*}
+        \symbf{x}^{\left( k + 1 \right)} = \symbf{x}^{\left( k \right)} - \tilde{\symbf{J}}\left( \symbf{x}^{\left( k \right)} \right)^{-1} \symbf{F}\left( \symbf{x}^{\left( k \right)} \right)
+    \end{equation*}
+    satisfies \(\norm*{\symbf{x}^{\left( k \right)} - \symbf{x}^\ast} < \delta\)
+    for all \(k\), and converges (near) quadratically to \(\symbf{x}^\ast\).
+\end{theorem}
 \end{document}
