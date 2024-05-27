@@ -5,6 +5,12 @@
 
 % Additional packages & macros
 \usepackage{subcaption}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{algorithmicx}
+\usepackage{nicematrix}
+
+\DeclareMathOperator{\argmin}{arg\, min}
 
 % Header and footer
 \newcommand{\unitName}{Computational Mathematics 2}
@@ -424,11 +430,13 @@ matrix \(\tilde{\symbf{A}}\) with \({\left( 1,\: 0,\: \dots,\: 0
 \(\tilde{\symbf{b}}\) with the Dirichlet boundary condition to ensure
 that the boundary condition is satisfied.
 \section{Stability Analysis}
-Consider the result
+Consider only the interior rows and columns of the result
 \begin{equation*}
     \tilde{\symbf{A}} \symbf{u}^{\left( n+1 \right)} = \tilde{\symbf{B}} \symbf{u}^{\left( n \right)} + \tilde{\symbf{b}}
 \end{equation*}
-and let us assume that \(\tilde{\symbf{A}}\) is invertible, so that we
+where \(\symbf{u} \in \R^{N - 2}\), \(\tilde{\symbf{A}} \in \R^{N - 2 \times N - 2}\),
+\(\tilde{\symbf{B}} \in \R^{N - 2 \times N - 2}\), and \(\tilde{\symbf{b}} \in \R^{N - 2}\).
+Then let us assume that \(\tilde{\symbf{A}}\) is invertible, so that we
 can construct the recurrence relation
 \begin{equation*}
     \symbf{u}^{\left( n+1 \right)} = \tilde{\symbf{A}}^{-1} \tilde{\symbf{B}} \symbf{u}^{\left( n \right)} + \tilde{\symbf{A}}^{-1} \tilde{\symbf{b}}.
@@ -444,21 +452,20 @@ For a uniform mesh, the matrix \(\symbf{A}\) is tridiagonal with constant
 diagonals (or \textit{Toeplitz tridiagonal}):
 \begin{equation*}
     \symbf{A} =
-    \begin{pmatrix}
+    \begin{bmatrix}
         \alpha & \beta  &        &        &        \\
         \gamma & \alpha & \beta  &        &        \\
                & \gamma & \alpha & \ddots &        \\
                &        & \ddots & \ddots & \beta  \\
                &        &        & \gamma & \alpha
-    \end{pmatrix}
+    \end{bmatrix}
     .
 \end{equation*}
 Such a matrix has eigenvalues
 \begin{equation*}
-    \lambda_i = \alpha + 2 \sqrt{\beta} \sqrt{\gamma} \cos\left( \frac{i \pi}{N+1} \right), \qquad i = 1,\: 2,\: \ldots,\: N
+    \lambda_i = \alpha + 2 \sqrt{\beta} \sqrt{\gamma} \cos\left( \frac{i \pi}{N+1} \right), \qquad i = 1,\: 2,\: \ldots,\: N-2
 \end{equation*}
-where \(N\) is the number of nodes. Consider an error term
-\(\symbf{\varepsilon}^{\left( 0 \right)}\) present in the
+Consider an error term \(\symbf{\varepsilon}^{\left( 0 \right)}\) present in the
 initial solution vector \(\symbf{u}^{\left( 0 \right)}\) at time \(t = 0\).
 Then, by the recurrence relation established above,
 \begin{align*}
@@ -532,46 +539,46 @@ may result in oscillations in the numerical solution. Consider the
 diagonal and off-diagonal parts of the LHS of the time-discretisation:
 \begin{align*}
     \symbf{I} - \fdif{t} \theta_1 \symbf{A} & =
-    \begin{pmatrix}
+    \begin{bmatrix}
         1 - \fdif{t} \theta_1 \alpha & -\fdif{t} \theta_1 \beta     &                           &                              \\
         -\fdif{t} \theta_1 \gamma    & 1 - \fdif{t} \theta_1 \alpha & \ddots                    &                              \\
                                      & \ddots                       & \ddots                    & -\fdif{t} \theta_1 \beta     \\
                                      &                              & -\fdif{t} \theta_1 \gamma & 1 - \fdif{t} \theta_1 \alpha
-    \end{pmatrix}
+    \end{bmatrix}
     \\
                                             & =
-    \begin{pmatrix}
+    \begin{bmatrix}
         1 - \fdif{t} \theta_1 \alpha &                              &        &                              \\
                                      & 1 - \fdif{t} \theta_1 \alpha &        &                              \\
                                      &                              & \ddots &                              \\
                                      &                              &        & 1 - \fdif{t} \theta_1 \alpha
-    \end{pmatrix}
+    \end{bmatrix}
     +
-    \begin{pmatrix}
+    \begin{bmatrix}
         0                         & -\fdif{t} \theta_1 \beta &                           &                          \\
         -\fdif{t} \theta_1 \gamma & 0                        & \ddots                    &                          \\
                                   & \ddots                   & \ddots                    & -\fdif{t} \theta_1 \beta \\
                                   &                          & -\fdif{t} \theta_1 \gamma & 0
-    \end{pmatrix}
+    \end{bmatrix}
     \\
                                             & = \left( 1 - \fdif{t} \theta_1 \alpha \right) \symbf{I} +
-    \begin{pmatrix}
+    \begin{bmatrix}
         0                         & -\fdif{t} \theta_1 \beta &                           &                          \\
         -\fdif{t} \theta_1 \gamma & 0                        & \ddots                    &                          \\
                                   & \ddots                   & \ddots                    & -\fdif{t} \theta_1 \beta \\
                                   &                          & -\fdif{t} \theta_1 \gamma & 0
-    \end{pmatrix}
+    \end{bmatrix}
     .
 \end{align*}
 The off-diagonal part of the matrix can be expressed as the difference
 of the original matrix and a diagonal matrix:
 \begin{align*}
-    \begin{pmatrix}
+    \begin{bmatrix}
         0                         & -\fdif{t} \theta_1 \beta &                           &                          \\
         -\fdif{t} \theta_1 \gamma & 0                        & \ddots                    &                          \\
                                   & \ddots                   & \ddots                    & -\fdif{t} \theta_1 \beta \\
                                   &                          & -\fdif{t} \theta_1 \gamma & 0
-    \end{pmatrix}
+    \end{bmatrix}
      & = \symbf{I} - \fdif{t} \theta_1 \symbf{A} - \left( 1 - \fdif{t} \theta_1 \alpha \right) \symbf{I} \\
      & = \symbf{I} - \fdif{t} \theta_1 \symbf{A} - \symbf{I} + \fdif{t} \theta_1 \alpha \symbf{I}        \\
      & = -\fdif{t} \theta_1 \left( \symbf{A} - \alpha \symbf{I} \right).
@@ -585,21 +592,21 @@ Therefore,
 Let us consider the individual elements of the two matrix terms on the RHS:
 \begin{align*}
     \fdif{t} \theta_1 \left( \symbf{A} - \alpha \symbf{I} \right) & = \fdif{t} \theta_1
-    \begin{pmatrix}
+    \begin{bmatrix}
         0      & \beta  &        &       \\
         \gamma & 0      & \ddots &       \\
                & \ddots & \ddots & \beta \\
                &        & \gamma & 0
-    \end{pmatrix}
+    \end{bmatrix}
     ,
     \\
     \symbf{I} + \fdif{t} \left( 1 - \theta_1 \right) \symbf{A}    & = \symbf{I} + \fdif{t} \left( 1 - \theta_1 \right)
-    \begin{pmatrix}
+    \begin{bmatrix}
         \alpha & \beta  &        &        \\
         \gamma & \alpha & \ddots &        \\
                & \ddots & \ddots & \beta  \\
                &        & \gamma & \alpha
-    \end{pmatrix}
+    \end{bmatrix}
     .
 \end{align*}
 For the solution of this equation to be monotonic, all coefficients of
@@ -969,7 +976,7 @@ The derivatives in the Jacobian matrix can be approximated using finite
 differences. Here, the first-order forward difference is used to
 approximate the \(j\)th column of the Jacobian as follows:
 \begin{equation*}
-    \symbf{J}\left( \symbf{x} \right) \symbf{e}_j \approx \tilde{\symbf{J}}\left( \symbf{x} \right) \symbf{e}_j = \frac{\symbf{F}\left( \symbf{x} + \epsilon \symbf{e}_j \right) - \symbf{F}\left( \symbf{x} \right)}{\varepsilon}
+    \symbf{J}\left( \symbf{x} \right) \symbf{e}_j \approx \tilde{\symbf{J}}\left( \symbf{x} \right) \symbf{e}_j = \frac{\symbf{F}\left( \symbf{x} + \varepsilon \symbf{e}_j \right) - \symbf{F}\left( \symbf{x} \right)}{\varepsilon}
 \end{equation*}
 for a suitably small value \(\varepsilon > 0\),
 where \(\symbf{e}_j\) is the \(j\)th standard basis vector.
@@ -981,7 +988,8 @@ The approximation of the Jacobian matrix is denoted
         \vertbar                                              &        & \vertbar                                              \\
         \tilde{\symbf{J}}\left( \symbf{x} \right) \symbf{e}_1 & \cdots & \tilde{\symbf{J}}\left( \symbf{x} \right) \symbf{e}_n \\
         \vertbar                                              &        & \vertbar
-    \end{bmatrix}.
+    \end{bmatrix}
+    .
 \end{equation*}
 The standard choice for the parameter \(\varepsilon\) is
 \begin{equation*}
@@ -1013,4 +1021,583 @@ where \(\epsilon_M\) is the unit roundoff.
     satisfies \(\norm*{\symbf{x}^{\left( k \right)} - \symbf{x}^\ast} < \delta\)
     for all \(k\), and converges (near) quadratically to \(\symbf{x}^\ast\).
 \end{theorem}
+When the Jacobian matrix is tridiagonal,
+\begin{equation*}
+    \symbf{J} =
+    \begin{bmatrix}
+        \pdv{f_1}{x_1} & \pdv{f_1}{x_2}                                                             \\
+        \pdv{f_2}{x_1} & \pdv{f_2}{x_2} & \pdv{f_2}{x_3}                                            \\
+                       & \pdv{f_3}{x_2} & \pdv{f_3}{x_3} & \pdv{f_3}{x_4}                           \\
+                       &                & \pdv{f_4}{x_3} & \pdv{f_4}{x_4} & \pdv{f_4}{x_5}          \\
+                       &                &                & \ddots         & \ddots         & \ddots \\
+    \end{bmatrix}
+\end{equation*}
+we can use a compact storage
+method to store the non-zero entries of \(\symbf{J}\) in an \(n \times 3\)
+matrix. Consider the following \textit{shift vectors}:
+\begin{equation*}
+    \symbf{s}_1 =
+    \begin{bmatrix}
+        1 \\
+        0 \\
+        0 \\
+        1 \\
+        0 \\
+        0 \\
+        \vdots
+    \end{bmatrix}
+    , \quad
+    \symbf{s}_2 =
+    \begin{bmatrix}
+        0 \\
+        1 \\
+        0 \\
+        0 \\
+        1 \\
+        0 \\
+        \vdots
+    \end{bmatrix}
+    , \quad
+    \symbf{s}_3 =
+    \begin{bmatrix}
+        0 \\
+        0 \\
+        1 \\
+        0 \\
+        0 \\
+        1 \\
+        \vdots
+    \end{bmatrix}
+    ,
+\end{equation*}
+so that by multiplying \(\symbf{J}\) by each shift vector, we can pack
+non-overlapping columns of \(\symbf{J}\):
+\begin{equation*}
+    \symbf{J}\symbf{s}_1 =
+    \begin{bmatrix}
+        \pdv{f_1}{x_1} \\
+        \pdv{f_2}{x_1} \\
+        \pdv{f_3}{x_4} \\
+        \pdv{f_4}{x_4} \\
+        \pdv{f_5}{x_4} \\
+        \pdv{f_6}{x_7} \\
+        \pdv{f_7}{x_7} \\
+        \vdots
+    \end{bmatrix}
+    , \quad
+    \symbf{J}\symbf{s}_2 =
+    \begin{bmatrix}
+        \pdv{f_1}{x_2} \\
+        \pdv{f_2}{x_2} \\
+        \pdv{f_3}{x_2} \\
+        \pdv{f_4}{x_5} \\
+        \pdv{f_5}{x_5} \\
+        \pdv{f_6}{x_5} \\
+        \pdv{f_7}{x_8} \\
+        \vdots
+    \end{bmatrix}
+    , \quad
+    \symbf{J}\symbf{s}_3 =
+    \begin{bmatrix}
+        \pdv{f_1}{x_3} \\
+        \pdv{f_2}{x_3} \\
+        \pdv{f_3}{x_3} \\
+        \pdv{f_4}{x_5} \\
+        \pdv{f_5}{x_5} \\
+        \pdv{f_6}{x_5} \\
+        \pdv{f_7}{x_8} \\
+        \vdots
+    \end{bmatrix}
+    .
+\end{equation*}
+Therefore the first-order finite differences method becomes
+\begin{equation*}
+    \symbf{J}\left( \symbf{x} \right) \symbf{s}_j \approx \frac{\symbf{F}\left( \symbf{x} + \varepsilon_j \symbf{s}_j \right) - \symbf{F}\left( \symbf{x} \right)}{\varepsilon_j}
+\end{equation*}
+where
+\begin{equation*}
+    \varepsilon_j =
+    \begin{cases}
+        \dfrac{\sqrt{\epsilon_M} \norm*{\symbf{x}}_2}{\norm*{\symbf{s}_j}_2}, & \symbf{x} \neq 0 \\
+        \dfrac{\sqrt{\epsilon_M}}{\norm*{\symbf{s}_j}_2},                     & \symbf{x} = 0
+    \end{cases}
+\end{equation*}
+\subsection{Line Searching}
+The methods above may not guarantee convergence for an arbitrary
+initial iterate \(\symbf{x}^{\left( 0 \right)}\). To improve upon the
+convergence of Newton's method, we will consider Newton methods that
+utilise \textbf{line searching}. When performing a Newton step, we will
+introduce a parameter \(\lambda^{\left( k \right)}\) that limits the
+size of the Newton step by considering the modified Newton iteration:
+\begin{equation*}
+    \symbf{x}^{\left( k+1 \right)} = \symbf{x}^{\left( k \right)} + \lambda^{\left( k \right)} \symbf{\delta}{\symbf{x}}^{\left( k \right)}
+\end{equation*}
+where \(0 < \lambda^{\left( k \right)} \leqslant 1\). We then choose
+\(\lambda^{\left( k \right)}\) to ensure that the nonlinear residual
+norm reduces during each Newton iteration:
+\begin{equation*}
+    \norm*{\symbf{F}\left( \symbf{x}^{\left( k+1 \right)} \right)} < \norm*{\symbf{F}\left( \symbf{x}^{\left( k \right)} \right)}.
+\end{equation*}
+In some cases this may still lead to oscillations, and thus a stronger
+condition is used in practice:
+\begin{equation*}
+    \norm*{\symbf{F}\left( \symbf{x}^{\left( k+1 \right)} \right)} < \left( 1 - \alpha \lambda^{\left( k \right)} \right) \norm*{\symbf{F}\left( \symbf{x}^{\left( k \right)} \right)}.
+\end{equation*}
+where \(\alpha = 10^{-4}\). This condition is known as the \textbf{Armijo rule}.
+\subsubsection{Simple Line Searching}
+In the simple line search, \(\lambda^{\left( k \right)}\) is chosen by
+repeatedly reducing it by some factor \(0 < \sigma < 1\) until the
+above criteria is met. In the simple line search, this factor is fixed
+for all iterations, and a common choice is \(0.5\):
+\begin{algorithm}[H]
+    \caption{Simple Line Searching}
+    \begin{algorithmic}
+        \State \(\lambda^{\left( k \right)} = 1\)
+        \State \(\tilde{\symbf{x}}^{\left( k + 1 \right)} = \symbf{x}^{\left( k \right)} + \lambda^{\left( k \right)} \symbf{\delta} \symbf{x}^{\left( k \right)}\) \Comment{Next candidate for \(\symbf{x}^{\left( k+1 \right)}\)}
+        \While{\(\norm*{\symbf{F}\left( \symbf{x}^{\left( k+1 \right)} \right)} \geqslant \left( 1 - \alpha \lambda^{\left( k \right)} \right) \norm*{\symbf{F}\left( \symbf{x}^{\left( k \right)} \right)}\)}
+        \State \(\lambda^{\left( k \right)} = \sigma \lambda^{\left( k \right)}\)
+        \State \(\tilde{\symbf{x}}^{\left( k+1 \right)} = \symbf{x}^{\left( k \right)} + \lambda^{\left( k \right)} \symbf{\delta}{\symbf{x}}^{\left( k \right)}\)
+        \EndWhile
+        \State \(\symbf{x}^{\left( k+1 \right)} = \tilde{\symbf{x}}^{\left( k+1 \right)}\)
+    \end{algorithmic}
+\end{algorithm}
+\subsubsection{General Line Searching}
+More sophisticated variations of this algorithm allow \(\lambda^{\left(
+k \right)}\) to reduce by a variable factor on every iteration. Here we
+will allow ourselves to choose the value of \(\sigma\) where \(\sigma
+\in \interval{\sigma_0}{\sigma_1}\) and \(0 < \sigma_0 < \sigma_1 <
+1\). Typical values are \(\sigma_0 = 0.1\) and \(\sigma_1 = 0.5\).
+Consider the function:
+\begin{equation*}
+    g\left( \lambda \right) = \norm*{\symbf{F}\left( \symbf{x}^{\left( k+1 \right)} \right)}^2 = \norm*{\symbf{F}\left( \symbf{x}^{\left( k \right)} + \lambda \symbf{\delta}\symbf{x}^{\left( k \right)} \right)}^2
+\end{equation*}
+which we will approximate by a polynomial \(p\left( \lambda \right)\) to
+find the value of \(\lambda^{\left( k \right)}\) that minimises
+\(p\left( \lambda \right)\). Assume that we have rejected \(m\) values
+of \(\lambda^{\left( k \right)}\) (resulting in \(m\) rejected values of
+\(\tilde{\symbf{x}}^{\left( k+1 \right)}\)). Then, we have available the
+values:
+\begin{equation*}
+    \norm*{\symbf{F}\left( \symbf{x}^{\left( k \right)} \right)},\: \norm*{\symbf{F}\left( \symbf{x}^{\left( k \right)} + \lambda_1^{\left( k \right)} \symbf{\delta}\symbf{x}^{\left( k \right)} \right)},\: \ldots,\: \norm*{\symbf{F}\left( \symbf{x}^{\left( k \right)} + \lambda_m^{\left( k \right)} \symbf{\delta}\symbf{x}^{\left( k \right)} \right)},
+\end{equation*}
+where \(\lambda_1^{\left( k \right)}\) is the most recently rejected
+value for \(\lambda^{\left( k \right)}\). Then, we can minimise \(p\left( \lambda \right)\)
+using calculus. In the following sections we will consider the
+\textbf{two-point parabolic model} and the \textbf{three-point parabolic model}.
+Given,
+\begin{equation*}
+    g\left( 0 \right) = \norm*{\symbf{F}\left( \symbf{x}^{\left( k \right)} \right)}^2
+\end{equation*}
+consider the derivative of \(g'\left( \lambda \right)\):
+\begin{align*}
+    g'\left( \lambda \right) & = \pdv*{\left[ \symbf{F}\left( \symbf{x}^{\left( k \right)} + \lambda \symbf{\delta}\symbf{x}^{\left( k \right)} \right)^\top \symbf{F}\left( \symbf{x}^{\left( k \right)} + \lambda \symbf{\delta}\symbf{x}^{\left( k \right)} \right) \right]}{\lambda}                                                                                                                                                                                                                                          \\
+                             & = \symbf{F}\left( \symbf{x}^{\left( k \right)} + \lambda \symbf{\delta}\symbf{x}^{\left( k \right)} \right)^\top \pdv{\symbf{F}\left( \symbf{x}^{\left( k \right)} + \lambda \symbf{\delta}\symbf{x}^{\left( k \right)} \right)}{\lambda} + \left( \pdv{\symbf{F}\left( \symbf{x}^{\left( k \right)} + \lambda \symbf{\delta}\symbf{x}^{\left( k \right)} \right)}{\lambda} \right)^\top \symbf{F}\left( \symbf{x}^{\left( k \right)} + \lambda \symbf{\delta}\symbf{x}^{\left( k \right)} \right) \\
+                             & = 2 \symbf{F}\left( \symbf{x}^{\left( k \right)} + \lambda \symbf{\delta}\symbf{x}^{\left( k \right)} \right)^\top \pdv{\symbf{F}\left( \symbf{x}^{\left( k \right)} + \lambda \symbf{\delta}\symbf{x}^{\left( k \right)} \right)}{\lambda}                                                                                                                                                                                                                                                        \\
+                             & = 2 \symbf{F}\left( \symbf{x}^{\left( k \right)} + \lambda \symbf{\delta}\symbf{x}^{\left( k \right)} \right)^\top \pdv{\symbf{F}\left( \symbf{x}^{\left( k \right)} + \lambda \symbf{\delta}\symbf{x}^{\left( k \right)} \right)}{\left( \symbf{x}^{\left( k \right)} + \lambda \symbf{\delta}\symbf{x}^{\left( k \right)} \right)} \pdv{\left( \symbf{x}^{\left( k \right)} + \lambda \symbf{\delta}\symbf{x}^{\left( k \right)} \right)}{\lambda}                                               \\
+                             & = 2 \symbf{F}\left( \symbf{x}^{\left( k \right)} + \lambda \symbf{\delta}\symbf{x}^{\left( k \right)} \right)^\top \symbf{J}\left( \symbf{x}^{\left( k \right)} + \lambda \symbf{\delta}\symbf{x}^{\left( k \right)} \right) \symbf{\delta}\symbf{x}^{\left( k \right)}.
+\end{align*}
+Then when \(\lambda = 0\),
+\begin{align*}
+    g'\left( 0 \right) & = 2 \symbf{F}\left( \symbf{x}^{\left( k \right)} \right)^\top \symbf{J}\left( \symbf{x}^{\left( k \right)} \right) \symbf{\delta}\symbf{x}^{\left( k \right)}                                                                                     \\
+                       & = 2 \symbf{F}\left( \symbf{x}^{\left( k \right)} \right)^\top \symbf{J}\left( \symbf{x}^{\left( k \right)} \right) \left[ -\symbf{J}\left( \symbf{x}^{\left( k \right)} \right)^{-1} \symbf{F}\left( \symbf{x}^{\left( k \right)} \right) \right] \\
+                       & = - 2 \symbf{F}\left( \symbf{x}^{\left( k \right)} \right)^\top \symbf{F}\left( \symbf{x}^{\left( k \right)} \right)                                                                                                                              \\
+                       & = - 2 \norm*{\symbf{F}\left( \symbf{x}^{\left( k \right)} \right)}^2                                                                                                                                                                              \\
+                       & = - 2 g\left( 0 \right).
+\end{align*}
+\subsubsection{Two-Point Parabolic Model}
+In the two-point parabolic model, we will use the known values
+\(g\left( 0 \right)\), \(g'\left( 0 \right)\), and \(g\left(
+\lambda_1^{\left( k \right)} \right)\), to construct a quadratic
+approximation for \(g\left( \lambda \right)\).
+\begin{align*}
+    p\left( 0 \right)                            & = g\left( 0 \right)                            \\
+    p'\left( 0 \right)                           & = g'\left( 0 \right) = -2 g\left( 0 \right)    \\
+    p\left( \lambda_1^{\left( k \right)} \right) & = g\left( \lambda_1^{\left( k \right)} \right)
+\end{align*}
+to find
+\begin{equation*}
+    p\left( \lambda \right) = \frac{2 g\left( 0 \right) \lambda_1^{\left( k \right)} - g\left( 0 \right) + g\left( \lambda_1^{\left( k \right)} \right)}{\lambda_1^{\left( k \right)2}} \lambda^2 - 2g\left( 0 \right) \lambda + g\left( 0 \right).
+\end{equation*}
+Using the minimum of this function, we can modify the line searching
+algorithm as follows:
+\begin{algorithm}[H]
+    \caption{Two-Point Parobolic Line Searching}
+    \begin{algorithmic}
+        \State \(\lambda^{\left( k \right)} = 1\)
+        \State \(\tilde{\symbf{x}}^{\left( k + 1 \right)} = \symbf{x}^{\left( k \right)} + \lambda^{\left( k \right)} \symbf{\delta} \symbf{x}^{\left( k \right)}\) \Comment{Next candidate for \(\symbf{x}^{\left( k+1 \right)}\)}
+        \While{\(\norm*{\symbf{F}\left( \symbf{x}^{\left( k+1 \right)} \right)} \geqslant \left( 1 - \alpha \lambda^{\left( k \right)} \right) \norm*{\symbf{F}\left( \symbf{x}^{\left( k \right)} \right)}\)}
+        \State \(\lambda_1^{\left( k \right)} = \lambda^{\left( k \right)}\)
+        \State \(\lambda^{\left( k \right)} = \argmin_{\lambda} p\left( \lambda \right)\)
+        \State \(\lambda^{\left( k \right)} = \max{\left( 0.1 \lambda_1^{\left( k \right)},\: \min{\left( \lambda^{\left( k \right)},\: 0.5 \lambda_1^{\left( k \right)} \right)} \right)}\) \Comment{Clamp \(\lambda^{\left( k \right)}\) between \(\interval{\sigma_0 \lambda_1^{\left( k \right)}}{\sigma_1 \lambda_1^{\left( k \right)}}\)}
+        \State \(\tilde{\symbf{x}}^{\left( k+1 \right)} = \symbf{x}^{\left( k \right)} + \lambda^{\left( k \right)} \symbf{\delta}{\symbf{x}}^{\left( k \right)}\)
+        \EndWhile
+        \State \(\symbf{x}^{\left( k+1 \right)} = \tilde{\symbf{x}}^{\left( k+1 \right)}\)
+    \end{algorithmic}
+\end{algorithm}
+The clamp function ensures the reduction factor is within \(\interval{\sigma_0}{\sigma_1}\),
+and is alternatively defined as:
+\begin{equation*}
+    \max{\left( 0.1 \lambda_1^{\left( k \right)},\: \min{\left( \lambda^{\left( k \right)},\: 0.5 \lambda_1^{\left( k \right)} \right)} \right)} =
+    \begin{cases}
+        \sigma_0 \lambda_1^{\left( k \right)} & \lambda^{\left( k \right)} < \sigma_0 \lambda_1^{\left( k \right)} \\
+        \sigma_1 \lambda_1^{\left( k \right)} & \lambda^{\left( k \right)} > \sigma_1 \lambda_1^{\left( k \right)} \\
+        \lambda^{\left( k \right)}            & \text{otherwise}.
+    \end{cases}
+\end{equation*}
+\subsubsection{Three-Point Parabolic Model}
+In the three-point parabolic model, we will use the known values
+\(g\left( 0 \right)\), \(g'\left( 0 \right)\), \(g\left(
+\lambda_1^{\left( k \right)} \right)\), and \(g\left( \lambda_1^{\left(
+k \right)} \right)\), to construct a quadratic approximation for
+\(g\left( \lambda \right)\).
+\begin{align*}
+    p\left( 0 \right)                            & = g\left( 0 \right)                            \\
+    p'\left( 0 \right)                           & = g'\left( 0 \right) = -2 g\left( 0 \right)    \\
+    p\left( \lambda_1^{\left( k \right)} \right) & = g\left( \lambda_1^{\left( k \right)} \right)
+    p\left( \lambda_2^{\left( k \right)} \right) & = g\left( \lambda_2^{\left( k \right)} \right)
+\end{align*}
+to find
+\begin{equation*}
+    p\left( \lambda \right) = g\left( 0 \right) + \frac{\lambda}{\lambda_1^{\left( k \right)} - \lambda_2^{\left( k \right)}} \left( \frac{\left(  \lambda - \lambda_2^{\left( k \right)} \right) \left( g\left( \lambda_1^{\left( k \right)} \right) - g\left( 0 \right) \right)}{\lambda_1^{\left( k \right)}} - \frac{\left( \lambda - \lambda_1^{\left( k \right)} \right) \left( g\left( \lambda_2^{\left( k \right)} \right) - g\left( 0 \right) \right)}{\lambda_2^{\left( k \right)}} \right)
+\end{equation*}
+Using the minimum of this function, we can modify the line searching
+algorithm as follows:
+\begin{algorithm}[H]
+    \caption{Three-Point Parobolic Line Searching}
+    \begin{algorithmic}
+        \State \(\lambda^{\left( k \right)} = 1\)
+        \State \(\tilde{\symbf{x}}^{\left( k + 1 \right)} = \symbf{x}^{\left( k \right)} + \lambda^{\left( k \right)} \symbf{\delta} \symbf{x}^{\left( k \right)}\) \Comment{Next candidate for \(\symbf{x}^{\left( k+1 \right)}\)}
+        \While{\(\norm*{\symbf{F}\left( \symbf{x}^{\left( k+1 \right)} \right)} \geqslant \left( 1 - \alpha \lambda^{\left( k \right)} \right) \norm*{\symbf{F}\left( \symbf{x}^{\left( k \right)} \right)}\)}
+        \If{\(m = 1\)}
+        \State \(\lambda_1^{\left( k \right)} = \lambda^{\left( k \right)}\)
+        \State \(\lambda^{\left( k \right)} = \lambda^{\left( k \right)} / 2\)
+        \Else
+        \State \(\lambda_2^{\left( k \right)} = \lambda_1^{\left( k \right)}\)
+        \State \(\lambda_1^{\left( k \right)} = \lambda^{\left( k \right)}\)
+
+        \State \(\lambda^{\left( k \right)} = \argmin_{\lambda} p\left( \lambda \right)\)
+        \State \(\lambda^{\left( k \right)} = \max{\left( 0.1 \lambda_1^{\left( k \right)},\: \min{\left( \lambda^{\left( k \right)},\: 0.5 \lambda_1^{\left( k \right)} \right)} \right)}\) \Comment{Clamp \(\lambda^{\left( k \right)}\) between \(\interval{\sigma_0 \lambda_1^{\left( k \right)}}{\sigma_1 \lambda_1^{\left( k \right)}}\)}
+        \EndIf
+        \State \(\tilde{\symbf{x}}^{\left( k+1 \right)} = \symbf{x}^{\left( k \right)} + \lambda^{\left( k \right)} \symbf{\delta}{\symbf{x}}^{\left( k \right)}\)
+        \EndWhile
+        \State \(\symbf{x}^{\left( k+1 \right)} = \tilde{\symbf{x}}^{\left( k+1 \right)}\)
+    \end{algorithmic}
+\end{algorithm}
+\part{Numerical Linear Algebra}
+Let us now consider how we might efficiently approximate the solution
+of the linear system:
+\begin{equation*}
+    \symbf{A} \symbf{x} = \symbf{b},
+\end{equation*}
+where \(\symbf{A} \in \R^{n \times n}\) is non-symmetric and \(\symbf{x},\symbf{b} \in \R^n\).
+In particular, we will explore the case where \(\symbf{A}\) is large and
+sparse, as is the case for the linear systems we have seen thus far. In
+the following sections, we will discuss some iterative methods that
+outperform traditional matrix decomposition methods, for large \(n\).
+\section{Krylov Subspace}
+Let \(\symbf{A} \in \R^{n \times n}\) and \(\symbf{b} \in \R^n\).
+Krylov subpace methods seek to find an approximate solution to
+\begin{equation*}
+    \symbf{A} \symbf{x} = \symbf{b},
+\end{equation*}
+within a Krylov subpace of \(\R^n\).
+\begin{definition}[Krylov Subspace]
+    Let \(\symbf{A} \in \R^{n \times n}\) and \(\symbf{b} \neq \symbf{0} \in \R^n\).
+    The \(m\)-dimensional Krylov subspace is spanned by the image of
+    \(\symbf{b}\) under the first \(m\) powers of \(\symbf{A}\):
+    \begin{equation*}
+        \mathcal{K}_m\left( \symbf{A},\: \symbf{b} \right) = \vspan{\left\{ \symbf{b},\: \symbf{A}\symbf{b},\: \symbf{A}^2\symbf{b},\: \ldots,\: \symbf{A}^{m-1}\symbf{b} \right\}}.
+    \end{equation*}
+\end{definition}
+\subsection{Hessenberg Decomposition}
+\begin{definition}[Hessenberg Matrix]
+    We define the matrix \(\symbf{H} \in \R^{n \times n}\) as being in
+    Hessenberg form in one of the following ways:
+    \begin{itemize}
+        \item \(\symbf{H}\) is upper-Hessenberg if \(h_{ij} = 0\) for all \(i > j + 1\)
+        \item \(\symbf{H}\) is lower-Hessenberg if \(h_{ij} = 0\) for all \(j > i + 1\)
+    \end{itemize}
+    Such matrices are almost triangular and allow the entries in the sub
+    diagonal or super diagonal to be nonzero, for upper and lower
+    triangular matrices respectively.
+\end{definition}
+For \(\symbf{A} \in \R^{n \times n}\), let us consider the Hessenberg
+decomposition of \(\symbf{A}\) defined as:
+\begin{equation*}
+    \symbf{A} = \symbf{Q} \symbf{H} \symbf{Q}^\top
+\end{equation*}
+where \(\symbf{H} \in \R^{n \times n}\) is upper-Hessenberg and
+\(\symbf{Q} \in \R^{n \times n}\) is orthogonal (so that \(\symbf{Q} \symbf{Q}^\top = \symbf{I}\)).
+If we use block matrix notation, the factorisation \(\symbf{A} \symbf{Q} = \symbf{Q} \symbf{H}\):
+\begin{equation*}
+    \symbf{A}
+    \begin{bmatrix}
+        \vertbar    &        & \vertbar    \\
+        \symbf{q}_1 & \cdots & \symbf{q}_n \\
+        \vertbar    &        & \vertbar    \\
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        \vertbar    &        & \vertbar    \\
+        \symbf{q}_1 & \cdots & \symbf{q}_n \\
+        \vertbar    &        & \vertbar    \\
+    \end{bmatrix}
+    \begin{bmatrix}
+        h_{11} & h_{12} & \cdots    & h_{1n}  \\
+        h_{21} & h_{22} &           &         \\
+               & \ddots & \ddots    & \vdots  \\
+               &        & h_{n,n-1} & h_{n,n} \\
+    \end{bmatrix}
+\end{equation*}
+shows that the columns of \(\symbf{A}\symbf{Q}\) are given by:
+\begin{align*}
+    \symbf{A} \symbf{q}_1 & = h_{11} \symbf{q}_1 + h_{21} \symbf{q}_2                                                      \\
+    \symbf{A} \symbf{q}_2 & = h_{12} \symbf{q}_1 + h_{22} \symbf{q}_2 + h_{32} \symbf{q}_3                                 \\
+                          & \vdotswithin{=}                                                                                \\
+    \symbf{A} \symbf{q}_n & = h_{1n} \symbf{q}_1 + h_{2n} \symbf{q}_2 + \cdots + h_{n,n} \symbf{q}_n + h_{n+1,n} \symbf{0}
+\end{align*}
+Observe that due to the Hessenberg form of \(\symbf{H}\), we have one
+fewer dimensions in the span of the matrix-vector product
+\(\symbf{A} \symbf{q}_n\). As \(n\) is large, let us instead consider
+the first \(m \ll n\) columns of the factorisation
+\(\symbf{A} \symbf{Q} = \symbf{Q} \symbf{H}\), so that the \(j\)th
+column of \(\symbf{A} \symbf{Q}\) can be expressed as:
+\begin{align*}
+    \symbf{A} \symbf{q}_1 & = h_{11} \symbf{q}_1 + h_{21} \symbf{q}_2                                                                                                  \\
+    \symbf{A} \symbf{q}_2 & = h_{12} \symbf{q}_1 + h_{22} \symbf{q}_2 + h_{32} \symbf{q}_3                                                                             \\
+                          & \vdotswithin{=}                                                                                                                            \\
+    \symbf{A} \symbf{q}_j & = h_{1j} \symbf{q}_1 + h_{2j} \symbf{q}_2 + \cdots + h_{jj} \symbf{q}_j + h_{j+1,j} \symbf{q}_{j+1} = \sum_{i=1}^{j+1} h_{ij} \symbf{q}_i.
+\end{align*}
+This gives us the reduced Hessenberg factorisation:
+\begin{align*}
+    \symbf{A}
+    \begin{bmatrix}
+        \vertbar    &        & \vertbar    \\
+        \symbf{q}_1 & \cdots & \symbf{q}_m \\
+        \vertbar    &        & \vertbar    \\
+    \end{bmatrix}
+                          & =
+    \begin{bmatrix}
+        \vertbar    &        & \vertbar        \\
+        \symbf{q}_1 & \cdots & \symbf{q}_{m+1} \\
+        \vertbar    &        & \vertbar        \\
+    \end{bmatrix}
+    \begin{bmatrix}
+        h_{11} & h_{12} & \cdots    & h_{1m}    \\
+        h_{21} & h_{22} &           &           \\
+               & \ddots & \ddots    & \vdots    \\
+               &        & h_{m,m-1} & h_{mm}    \\
+               &        &           & h_{m+1,m} \\
+    \end{bmatrix}
+    \\
+    \symbf{A} \symbf{Q}_m & = \symbf{Q}_{m+1} \bar{\symbf{H}}
+\end{align*}
+where \(\symbf{Q}_m \in \R^{n \times m}\), \(\symbf{Q}_{m+1} \in \R^{n \times m+1}\),
+and \(\bar{\symbf{H}} \in \R^{m+1 \times m}\). Note that the matrix
+\(\bar{\symbf{H}}\) is now no longer Hessenberg. By rearranging for
+\(\symbf{q}_{j+1}\), we find that these vectors are the result of the
+Gram-Schmidt method that constructs \(h_{ij}\) and the orthonormal
+vectors \(\symbf{q}_j\):
+\begin{align*}
+    \symbf{q}_{j+1} & = \left( \symbf{A} \symbf{q}_j - h_{1j} \symbf{q}_1 - h_{2j} \symbf{q}_2 - \cdots - h_{jj} \symbf{q}_j \right) / h_{j+1,j} \\
+                    & = \frac{1}{h_{j+1,j}} \left( \symbf{A} \symbf{q}_j - \sum_{i=1}^j h_{ij} \symbf{q}_i \right).
+\end{align*}
+\subsection{Arnoldi's Method}
+Let us now consider Arnoldi's method for constructing the matrices
+\(\symbf{Q}_m\) and \(\symbf{H}_m\), using the Krylov subspace
+\(\mathcal{K}_m\left( \symbf{A},\: \symbf{b} \right)\), so that,
+\begin{equation*}
+    \vspan{\left\{ \symbf{b},\: \symbf{A}\symbf{b},\: \symbf{A}^2\symbf{b},\: \ldots,\: \symbf{A}^{m-1}\symbf{b} \right\}} = \vspan{\left\{ \symbf{q}_1,\: \symbf{q}_2,\: \ldots,\: \symbf{q}_m \right\}}.
+\end{equation*}
+We will do so by applying the Gram-Schmidt method on the vectors spanned
+by Krylov subspaces of increasing dimensions. Consider the Krylov
+subspace of dimension 1:
+\begin{equation*}
+    \mathcal{K}_1\left( \symbf{A},\: \symbf{b} \right) = \vspan{\left\{ \symbf{b} \right\}}.
+\end{equation*}
+Applying Gram-Schmidt,
+\begin{align*}
+    \symbf{v}_1 & = \symbf{b}, & \symbf{q}_1 & = \frac{\symbf{v}_1}{\norm*{\symbf{v}_1}}
+\end{align*}
+therefore,
+\begin{equation*}
+    \mathcal{K}_1\left( \symbf{A},\: \symbf{b} \right) = \vspan{\left\{ \symbf{b} \right\}} = \vspan{\left\{ \symbf{q}_1 \right\}}.
+\end{equation*}
+Consider the Krylov subspace of dimension 2:
+\begin{equation*}
+    \mathcal{K}_2\left( \symbf{A},\: \symbf{b} \right) = \vspan{\left\{ \symbf{b},\: \symbf{A}\symbf{b} \right\}} = \vspan{\left\{ \symbf{q}_1,\: \symbf{A}\symbf{q}_1 \right\}},
+\end{equation*}
+where we recognise that \(\symbf{q}_1\) is a linear combination of
+\(\symbf{b}\). Applying Gram-Schmidt using this information,
+\begin{align*}
+    \symbf{v}_2 & = \symbf{A}\symbf{q}_1 - \left( \symbf{q}_1^\top \symbf{A}\symbf{q}_1 \right) \symbf{q}_1, & \symbf{q}_2 & = \frac{\symbf{v}_2}{\norm*{\symbf{v}_2}}
+\end{align*}
+therefore,
+\begin{equation*}
+    \mathcal{K}_2\left( \symbf{A},\: \symbf{b} \right) = \vspan{\left\{ \symbf{b},\: \symbf{A}\symbf{b} \right\}} = \vspan{\left\{ \symbf{q}_1,\: \symbf{q}_2 \right\}}.
+\end{equation*}
+Finally, consider the Krylov subspace of dimension 3:
+\begin{equation*}
+    \mathcal{K}_3\left( \symbf{A},\: \symbf{b} \right) = \vspan{\left\{ \symbf{b},\: \symbf{A}\symbf{b},\: \symbf{A}^2\symbf{b} \right\}} = \vspan{\left\{ \symbf{q}_1,\: \symbf{A}\symbf{q}_1,\: \symbf{A}^2\symbf{q}_1 \right\}} = \vspan{\left\{ \symbf{q}_1,\: \symbf{q}_2,\: \symbf{A}\symbf{q}_2 \right\}},
+\end{equation*}
+where we again use the result that \(\symbf{A} \symbf{q}_1\) is a linear
+combination of \(\symbf{q}_1\) and \(\symbf{q}_2\):
+\begin{equation*}
+    \symbf{A}\symbf{q}_1 = \left( \symbf{q}_1^\top \symbf{A}\symbf{q}_1 \right) \symbf{q}_1 - \norm*{\symbf{v}_2} \symbf{q}_2.
+\end{equation*}
+This implies that \(\symbf{A}^2 \symbf{q}_1\) is a linear combination of
+\(\symbf{A} \symbf{q}_1\) and \(\symbf{A} \symbf{q}_2\), as:
+\begin{equation*}
+    \symbf{A}^2 \symbf{q}_1 = \symbf{A} \left( \symbf{A} \symbf{q}_1 \right) = \left( \symbf{q}_1^\top \symbf{A}\symbf{q}_1 \right) \symbf{A} \symbf{q}_1 - \norm*{\symbf{v}_2} \symbf{A} \symbf{q}_2.
+\end{equation*}
+Then, applying Gram-Schmidt shows,
+\begin{align*}
+    \symbf{v}_3 & = \symbf{A}\symbf{q}_2 - \left( \symbf{q}_1^\top \symbf{A}\symbf{q}_2 \right) \symbf{q}_1 - \left( \symbf{q}_2^\top \symbf{A}\symbf{q}_2 \right) \symbf{q}_2, & \symbf{q}_3 & = \frac{\symbf{v}_3}{\norm*{\symbf{v}_3}}
+\end{align*}
+therefore,
+\begin{equation*}
+    \mathcal{K}_3\left( \symbf{A},\: \symbf{b} \right) = \vspan{\left\{ \symbf{b},\: \symbf{A}\symbf{b},\: \symbf{A}^2\symbf{b} \right\}} = \vspan{\left\{ \symbf{q}_1,\: \symbf{q}_2,\: \symbf{q}_3 \right\}}.
+\end{equation*}
+If we continue this process, we find that for an \(m\)-dimensional
+Krylov subspace, the Gram-Schmidt process produces the following
+orthonormal vector \(\symbf{q}_{j+1}\):
+\begin{align*}
+    \norm*{\symbf{v}_{j+1}} \symbf{q}_{j+1} & = \symbf{A}\symbf{q}_j - \left( \symbf{q}_1^\top \symbf{A}\symbf{q}_j \right) \symbf{q}_1 - \left( \symbf{q}_2^\top \symbf{A} \symbf{q}_j \right) \symbf{q}_2 - \cdots - \left( \symbf{q}_j^\top \symbf{A} \symbf{q}_j \right) \symbf{q}_j \\
+    \symbf{q}_{j+1}                         & = \frac{1}{\norm*{\symbf{v}_{j+1}}} \left( \symbf{A} \symbf{q}_j - \sum_{i=1}^j \left( \symbf{q}_i^\top \symbf{A} \symbf{q}_j \right) \symbf{q}_i \right),
+\end{align*}
+and \(\symbf{A}\symbf{q}_j\) is given by:
+\begin{equation*}
+    \symbf{A} \symbf{q}_j = \sum_{i=1}^j \left( \symbf{q}_i^\top \symbf{A} \symbf{q}_j \right) \symbf{q}_i + \norm*{\symbf{v}_{j+1}} \symbf{q}_{j+1}.
+\end{equation*}
+In this form, we can see that this is precisely the Hessenberg
+decomposition, where we can build the matrix \(\bar{\symbf{H}}_m\) using:
+\begin{equation*}
+    h_{ij} = \symbf{q}_i^\top \symbf{A} \symbf{q}_j, \quad h_{j+1,j} = \norm*{\symbf{v}_{j+1}}.
+\end{equation*}
+This shows us a recurrence relationship between \(\symbf{H}_m\) and
+\(\bar{\symbf{H}}_m\):
+\begin{align*}
+    \bar{\symbf{H}}_1 & =
+    \begin{bmatrix}
+        \symbf{q}_1^\top \symbf{A} \symbf{q}_1 \\
+        \norm*{\symbf{v}_2}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        \symbf{q}_1^\top \symbf{A} \symbf{q}_1
+    \end{bmatrix}
+    + \norm*{\symbf{v}_2} \symbf{e}_1^\top
+    = \symbf{H}_1 + \norm*{\symbf{v}_2} \symbf{e}_1^\top \\
+    \bar{\symbf{H}}_2 & =
+    \begin{bmatrix}
+        \symbf{q}_1^\top \symbf{A} \symbf{q}_1 & \symbf{q}_1^\top \symbf{A} \symbf{q}_2 \\
+        \norm*{\symbf{v}_2}                    & \symbf{q}_2^\top \symbf{A} \symbf{q}_2 \\
+                                               & \norm*{\symbf{v}_3}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        \symbf{q}_1^\top \symbf{A} \symbf{q}_1 & \symbf{q}_1^\top \symbf{A} \symbf{q}_2 \\
+        \norm*{\symbf{v}_2}                    & \symbf{q}_2^\top \symbf{A} \symbf{q}_2 \\
+    \end{bmatrix}
+    + \norm*{\symbf{v}_3} \symbf{e}_2^\top
+    = \symbf{H}_2 + \norm*{\symbf{v}_3} \symbf{e}_2^\top \\
+    \bar{\symbf{H}}_3 & =
+    \begin{bmatrix}
+        \symbf{q}_1^\top \symbf{A} \symbf{q}_1 & \symbf{q}_1^\top \symbf{A} \symbf{q}_2 & \symbf{q}_1^\top \symbf{A} \symbf{q}_3 \\
+        \norm*{\symbf{v}_2}                    & \symbf{q}_2^\top \symbf{A} \symbf{q}_2 & \symbf{q}_2^\top \symbf{A} \symbf{q}_3 \\
+                                               & \norm*{\symbf{v}_3}                    & \symbf{q}_3^\top \symbf{A} \symbf{q}_3 \\
+                                               &                                        & \norm*{\symbf{v}_4}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        \symbf{q}_1^\top \symbf{A} \symbf{q}_1 & \symbf{q}_1^\top \symbf{A} \symbf{q}_2 & \symbf{q}_1^\top \symbf{A} \symbf{q}_3 \\
+        \norm*{\symbf{v}_2}                    & \symbf{q}_2^\top \symbf{A} \symbf{q}_2 & \symbf{q}_2^\top \symbf{A} \symbf{q}_3 \\
+                                               & \norm*{\symbf{v}_3}                    & \symbf{q}_3^\top \symbf{A} \symbf{q}_3 \\
+    \end{bmatrix}
+    + \norm*{\symbf{v}_4} \symbf{e}_3^\top
+    = \symbf{H}_3 + \norm*{\symbf{v}_4} \symbf{e}_3^\top \\
+                      & \vdotswithin{=}
+\end{align*}
+where
+\begin{equation*}
+    \bar{\symbf{H}}_m = \symbf{H}_m + h_{m+1,m} \symbf{e}_m^\top
+\end{equation*}
+which we can express in block matrix notation as:
+\begin{equation*}
+    \bar{\symbf{H}}_m =
+    \begin{bmatrix}
+        \symbf{H}_m \\
+        h_{m+1,m} \symbf{e}_m^\top.
+    \end{bmatrix}
+\end{equation*}
+This allows us to write the Hessenberg factorisation using the Hessenberg
+matrix \(\symbf{H}_m\):
+\begin{equation*}
+    \symbf{A} \symbf{Q}_m = \symbf{Q}_m \symbf{H}_m + h_{m+1,m} \symbf{q}_{m+1} \symbf{e}_m^\top.
+\end{equation*}
+By orthogonality, this matrix can be decomposed in terms of \(\symbf{A}\)
+and \(\symbf{Q}_m\):
+\begin{align*}
+    \symbf{A} \symbf{Q}_m                  & = \symbf{Q}_m \symbf{H}_m + h_{m+1,m} \symbf{q}_{m+1} \symbf{e}_m^\top                                                                 \\
+    \symbf{Q}_m^\top \symbf{A} \symbf{Q}_m & = \left( \symbf{Q}_m^\top \symbf{Q}_m \right) \symbf{H}_m + h_{m+1,m} \left( \symbf{Q}_m^\top \symbf{q}_{m+1} \right) \symbf{e}_m^\top \\
+    \symbf{Q}_m^\top \symbf{A} \symbf{Q}_m & = \symbf{H}_m.
+\end{align*}
+Using this result, we can estimate the eigenvalues and eigenvectors of
+\(\symbf{H}_m = \symbf{Q}_m^\top \symbf{A} \symbf{Q}_m\) iteratively
+using the QR algorithm, to estimate \(m\) eigenvalues and eigenvectors
+of \(\symbf{A}\), called \textbf{Ritz values} and \textbf{Ritz vectors},
+respectively.
+Like the Hessenberg matrix \(\symbf{H}_m\), the matrix
+\(\bar{\symbf{H}}_m\) can also be formed recursively:
+\begin{equation*}
+    \bar{\symbf{H}}_m =
+    \begin{bNiceArray}{ccccc}[margin=4pt]
+        \Block[borders={bottom,right,tikz=dashed}]{3-4}{}
+        &  &                       &  & h_{1m}    \\[1ex]
+        &  & \bar{\symbf{H}}_{m-1} &  & \vdots    \\[1ex]
+        &  &                       &  & h_{mm}    \\[1ex]
+        &  &                       &  & \Block[borders={top,left,tikz=dashed}]{1-1}{} h_{m+1,m}
+    \end{bNiceArray}
+\end{equation*}
+The Gram-Schmidt process can be performed on an \(m\)-dimensional Krylov
+subspace as follows:
+\begin{algorithm}[H]
+    \caption{Arnoldi's Method using the Classical Gram-Schmidt Process}
+    \begin{algorithmic}
+        \State \(\symbf{Q}_{:1} = \symbf{b}/\norm*{\symbf{b}}\)
+        \For{\(j = 1,\: \ldots,\: m\)}
+            \State \(\symbf{Q}_{:,j+1} = \symbf{A} \symbf{Q}_{:j}\)
+            \For{\(i = 1,\: \ldots,\: j\)}
+                \State \(\symbf{H}_{ij} = \symbf{Q}_{:i}^\top \symbf{A} \symbf{Q}_{:j}\) \Comment{Construct upper triangular entries \(h_{ij}\)}
+                \State \(\symbf{Q}_{:,j+1} = \symbf{Q}_{:,j+1} - \symbf{H}_{ij} \symbf{Q}_{:j}\)
+            \EndFor
+            \State \(\symbf{H}_{j+1,j} = \norm*{\symbf{Q}_{:,j+1}}\) \Comment{Construct sub-diagonal entries \(h_{j+1,j}\)}
+            \If{\(\symbf{H}_{j+1,j} \neq 0\)}
+                \State \(\symbf{Q}_{:,j+1} = \symbf{Q}_{:,j+1} / \symbf{H}_{j+1,j}\) \Comment{Normalise \(\symbf{q}_{j+1}\)}
+            \EndIf
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+When using floating-point arithmetic, the basis vectors of \(\symbf{Q}_m\)
+are sometimes not orthogonal due to rounding errors. This can be corrected
+using the Modified Gram-Schmidt process.
+\begin{algorithm}[H]
+    \caption{Arnoldi's Method using the Modified Gram-Schmidt Process}
+    \begin{algorithmic}
+        \State \(\symbf{Q}_{:1} = \symbf{b}/\norm*{\symbf{b}}\)
+        \For{\(j = 1,\: \ldots,\: m\)}
+            \State \(\symbf{Q}_{:,j+1} = \symbf{A} \symbf{Q}_{:j}\)
+            \For{\(i = 1,\: \ldots,\: j\)}
+                \State \(\symbf{H}_{ij} = \symbf{Q}_{:i}^\top \symbf{Q}_{:j}\) \Comment{Construct upper triangular entries \(h_{ij}\)}
+                \State \(\symbf{Q}_{:,j+1} = \symbf{Q}_{:,j+1} - \symbf{H}_{ij} \symbf{Q}_{:j}\)
+            \EndFor
+            \State \(\symbf{H}_{j+1,j} = \norm*{\symbf{Q}_{:,j+1}}\) \Comment{Construct sub-diagonal entries \(h_{j+1,j}\)}
+            \If{\(\symbf{H}_{j+1,j} \neq 0\)}
+                \State \(\symbf{Q}_{:,j+1} = \symbf{Q}_{:,j+1} / \symbf{H}_{j+1,j}\) \Comment{Normalise \(\symbf{q}_{j+1}\)}
+            \EndIf
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+In this algorithm, we omit the left-multiplication by \(\symbf{A}\) on
+\(\symbf{Q}_{:,j}\), when computing \(h_{ij}\).
 \end{document}
