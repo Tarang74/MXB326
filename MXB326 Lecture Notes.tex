@@ -4,6 +4,7 @@
 \input{LaTeX-Submodule/template.tex}
 
 % Additional packages & macros
+\usepackage{appendix}
 \usepackage{subcaption}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
@@ -1283,7 +1284,7 @@ algorithm as follows:
         \State \(\symbf{x}^{\left( k+1 \right)} = \tilde{\symbf{x}}^{\left( k+1 \right)}\)
     \end{algorithmic}
 \end{algorithm}
-\part{Numerical Linear Algebra}
+\part{Krylov Methods}
 Let us now consider how we might efficiently approximate the solution
 of the linear system:
 \begin{equation*}
@@ -1588,7 +1589,7 @@ subspace as follows:
         \For{\(m = 1,\: 2,\: \ldots\)}
         \State \(\symbf{Q}_{:,m+1} = \symbf{A} \symbf{Q}_{:m}\)
         \For{\(i = 1,\: \ldots,\: m\)}
-        \State \(\symbf{H}_{im} = \symbf{Q}_{:i}^\top \symbf{A} \symbf{Q}_{:m}\) \Comment{Construct upper triangular entries \(h_{im}\)}
+        \State \(\symbf{H}_{im} = \symbf{Q}_{:i}^\top \symbf{A} \symbf{Q}_{:,m+1}\) \Comment{Construct upper triangular entries \(h_{im}\)}
         \State \(\symbf{Q}_{:,m+1} = \symbf{Q}_{:,m+1} - \symbf{H}_{im} \symbf{Q}_{:i}\)
         \EndFor
         \State \(\symbf{H}_{m+1,m} = \norm*{\symbf{Q}_{:,m+1}}\) \Comment{Construct sub-diagonal entries \(h_{m+1,m}\)}
@@ -1609,7 +1610,7 @@ using the Modified Gram-Schmidt process.
         \For{\(m = 1,\: 2,\: \ldots\)}
         \State \(\symbf{Q}_{:,m+1} = \symbf{A} \symbf{Q}_{:m}\)
         \For{\(i = 1,\: \ldots,\: m\)}
-        \State \(\symbf{H}_{im} = \symbf{Q}_{:i}^\top \symbf{Q}_{:m}\) \Comment{Construct upper triangular entries \(h_{im}\)}
+        \State \(\symbf{H}_{im} = \symbf{Q}_{:i}^\top \symbf{Q}_{:,m+1}\) \Comment{Construct upper triangular entries \(h_{im}\)}
         \State \(\symbf{Q}_{:,m+1} = \symbf{Q}_{:,m+1} - \symbf{H}_{im} \symbf{Q}_{:i}\)
         \EndFor
         \State \(\symbf{H}_{m+1,m} = \norm*{\symbf{Q}_{:,m+1}}\) \Comment{Construct sub-diagonal entries \(h_{m+1,m}\)}
@@ -1622,7 +1623,7 @@ using the Modified Gram-Schmidt process.
 \end{algorithm}
 In this algorithm, we omit the left-multiplication by \(\symbf{A}\) on
 \(\symbf{Q}_{:,j}\), when computing \(h_{ij}\).
-\subsection{Solving Sparse Linear Systems}
+\section{Solving Sparse Linear Systems}
 Krylov subspace methods seek to find an approximate solution
 \(\symbf{x}^{\left( m \right)}\) to the linear system \(\symbf{A}
 \symbf{x} = \symbf{b}\) given some initial estimate \(\symbf{x}^{\left(
@@ -1651,7 +1652,7 @@ dimensional Krylov subspace until the residual vector is sufficiently
 small. As we will see in the following sections, the solution \(\symbf{y}_m\)
 involves solving equations involving the Hessenberg matrix \(\symbf{H}_m\),
 which are much cheaper to compute than the original matrix \(\symbf{A}\).
-\subsubsection{Full Orthogonalisation Method}
+\subsection{Full Orthogonalisation Method}
 In the Full Orthogonalisation Method (FOM), the subspace of constraints
 \(\mathcal{W}_m\) is spanned by the basis vectors of the Krylov
 subspace \(\mathcal{K}_m\left( \symbf{A},\: \symbf{r}^{\left( 0
@@ -1677,7 +1678,7 @@ Therefore, at the \(m\)th iteration, the approximate solution is given by:
 \begin{equation*}
     \symbf{x}^{\left( m \right)} = \symbf{x}^{\left( 0 \right)} + \beta \symbf{Q}_m \symbf{H}_m^{-1} \symbf{e}_1.
 \end{equation*}
-\subsubsection{Generalised Minimal Residual Method}
+\subsection{Generalised Minimal Residual Method}
 In the Generalised Minimal Residual Method (GMRES), the subspace of
 constraints \(\mathcal{W}_m\) is spanned by the basis vectors of the
 Krylov subspace \(\mathcal{K}_m\left( \symbf{A},\: \symbf{r}^{\left( 0
@@ -1705,7 +1706,7 @@ Therefore, at the \(m\)th iteration, the approximate solution is given by:
 \begin{equation*}
     \symbf{x}^{\left( m \right)} = \symbf{x}^{\left( 0 \right)} + \beta \symbf{Q}_m \bar{\symbf{H}}_m^{-1} \symbf{e}_1.
 \end{equation*}
-\subsubsection{Residual Norms of Krylov Subspace Methods}
+\subsection{Residual Norms of Krylov Subspace Methods}
 When applying Krylov subspace methods to solve linear systems, the
 stopping criterion is often based on the norm of the residual vector,
 where iterations are stopped until:
@@ -1736,8 +1737,8 @@ Similarly, for the Generalised Minimal Residual Method (GMRES):
                                          & = \norm*{\symbf{r}^{\left( 0 \right)} - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m}                                      \\
                                          & = \norm*{\symbf{Q}_{m+1} \symbf{Q}_{m+1}^\top \symbf{r}^{\left( 0 \right)} - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m} \\
                                          & = \norm*{\beta \symbf{Q}_{m+1} \symbf{Q}_{m+1}^\top \symbf{q}_1 - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m}            \\
-                                         & = \norm*{\beta \symbf{Q}_{m+1} \symbf{e}_1 - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m}            \\
-                                         & = \norm*{\symbf{Q}_{m+1} \left( \beta \symbf{e}_1 - \bar{\symbf{H}}_m \symbf{y}_m \right)}            \\
+                                         & = \norm*{\beta \symbf{Q}_{m+1} \symbf{e}_1 - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m}                                 \\
+                                         & = \norm*{\symbf{Q}_{m+1} \left( \beta \symbf{e}_1 - \bar{\symbf{H}}_m \symbf{y}_m \right)}                                  \\
                                          & = \norm*{\beta \symbf{e}_1 - \bar{\symbf{H}}_m \symbf{y}_m}.
 \end{align*}
 In both cases, the norm of the residual vector can be computed using
@@ -1749,9 +1750,10 @@ squares problem for \(\symbf{y}_m\):
 \end{equation*}
 so that the GMRES solution minimises the norm of the residual vector
 over the affine space \(\symbf{x}^{\left( 0 \right)} + \mathcal{K}_m\left( \symbf{A},\: \symbf{r}^{\left( 0 \right)} \right)\).
-\subsubsection{Algorithm}
-Both the Full Orthogonalisation Method (FOM) and the Generalised Minimal
-Residual Method (GMRES) can be implemented using the similar algorithm:
+\subsection{Algorithmic Implementation}
+Both the Full Orthogonalisation Method (FOM) and the Generalised
+Minimal Residual Method (GMRES) can be implemented using a similar
+algorithm:
 \begin{algorithm}[H]
     \caption{Full Orthogonalisation Method}
     \begin{algorithmic}
@@ -1759,23 +1761,24 @@ Residual Method (GMRES) can be implemented using the similar algorithm:
         \State \(\beta = \norm*{\symbf{r}^{\left( 0 \right)}}\)
         \State \(\symbf{Q}_{:1} = \symbf{r}^{\left( 0 \right)}/\beta\)
         \For{\(m = 1,\: 2,\: \ldots\)}
-            \State \(\symbf{Q}_{:,m+1} = \symbf{A} \symbf{Q}_{:m}\) \Comment{Gram-Schmidt process to construct \(\symbf{Q}_{1:m,1:m}\) and \(\symbf{H}_{1:m,1:m}\)}
-            \For{\(i = 1,\: \ldots,\: m\)}
-                \State \(\symbf{H}_{im} = \symbf{Q}_{:i}^\top \symbf{A} \symbf{Q}_{:m + 1}\)
-                \State \(\symbf{Q}_{:,m+1} = \symbf{Q}_{:,m+1} - \symbf{H}_{im} \symbf{Q}_{:i}\)
-            \EndFor
-            \State \(\symbf{H}_{m+1,m} = \norm*{\symbf{Q}_{:,m+1}}\)
-            \Statex
-            \If{\(\symbf{H}_{m+1,m} < \mathrm{tol}\)} \Comment{Norm of residual will be close to zero}
-                \State solve \(\symbf{H}_{1:m,1:m} \symbf{y}_m = \beta \symbf{e}_1\)
-                \State \textbf{break}
-            \EndIf
-            \Statex
-            \State Solve \(\symbf{H}_{1:m,1:m} \symbf{y}_m = \beta \symbf{e}_1\) \Comment{Determine coefficient vector}
-            \State \(\norm*{\symbf{r}^{\left( m \right)}} = \symbf{H}_{m+1,m} \abs*{\symbf{e}_m^\top \symbf{y}_m}\)
-            \If{\(\norm*{\symbf{r}^{\left( m \right)}} \leqslant \mathrm{rtol} \norm*{\symbf{r}^{\left( 0 \right)}} + \mathrm{atol}\)} \Comment{Stopping criterion}
-                \State \textbf{break}
-            \EndIf
+        \State \(\symbf{Q}_{:,m+1} = \symbf{A} \symbf{Q}_{:m}\) \Comment{Gram-Schmidt process to construct \(\symbf{Q}_{1:m,1:m}\) and \(\symbf{H}_{1:m,1:m}\)}
+        \For{\(i = 1,\: \ldots,\: m\)}
+        \State \(\symbf{H}_{im} = \symbf{Q}_{:i}^\top \symbf{Q}_{:,m + 1}\)
+        \State \(\symbf{Q}_{:,m+1} = \symbf{Q}_{:,m+1} - \symbf{H}_{im} \symbf{Q}_{:i}\)
+        \EndFor
+        \State \(\symbf{H}_{m+1,m} = \norm*{\symbf{Q}_{:,m+1}}\)
+        \Statex
+        \If{\(\symbf{H}_{m+1,m} < \mathrm{tol}\)} \Comment{Norm of residual will be close to zero}
+        \State solve \(\symbf{H}_{1:m,1:m} \symbf{y}_m = \beta \symbf{e}_1\)
+        \State \textbf{break}
+        \EndIf
+        \State \(\symbf{Q}_{:,m+1} = \symbf{Q}_{:,m+1} / \symbf{H}_{m+1,m}\)
+        \Statex
+        \State solve \(\symbf{H}_{1:m,1:m} \symbf{y}_m = \beta \symbf{e}_1\) \Comment{Determine coefficient vector}
+        \State \(\norm*{\symbf{r}^{\left( m \right)}} = \symbf{H}_{m+1,m} \abs*{\symbf{e}_m^\top \symbf{y}_m}\)
+        \If{\(\norm*{\symbf{r}^{\left( m \right)}} \leqslant \mathrm{rtol} \norm*{\symbf{r}^{\left( 0 \right)}} + \mathrm{atol}\)} \Comment{Stopping criterion}
+        \State \textbf{break}
+        \EndIf
         \EndFor
         \State \textbf{return} \(\symbf{x}^{\left( m \right)} = \symbf{x}^{\left( 0 \right)} + \symbf{Q}_{:,1:m} \symbf{y}_m\)
     \end{algorithmic}
@@ -1787,25 +1790,419 @@ Residual Method (GMRES) can be implemented using the similar algorithm:
         \State \(\beta = \norm*{\symbf{r}^{\left( 0 \right)}}\)
         \State \(\symbf{Q}_{:1} = \symbf{r}^{\left( 0 \right)}/\beta\)
         \For{\(m = 1,\: 2,\: \ldots\)}
-            \State \(\symbf{Q}_{:,m+1} = \symbf{A} \symbf{Q}_{:m}\) \Comment{Gram-Schmidt process to construct \(\symbf{Q}_{1:m,1:m}\) and \(\symbf{H}_{1:m,1:m}\)}
-            \For{\(i = 1,\: \ldots,\: m\)}
-                \State \(\symbf{H}_{im} = \symbf{Q}_{:i}^\top \symbf{A} \symbf{Q}_{:m + 1}\)
-                \State \(\symbf{Q}_{:,m+1} = \symbf{Q}_{:,m+1} - \symbf{H}_{im} \symbf{Q}_{:i}\)
-            \EndFor
-            \State \(\symbf{H}_{m+1,m} = \norm*{\symbf{Q}_{:,m+1}}\)
-            \Statex
-            \If{\(\symbf{H}_{m+1,m} < \mathrm{tol}\)} \Comment{Norm of residual will be close to zero}
-                \State solve \(\symbf{H}_{1:m,1:m} \symbf{y}_m = \beta \symbf{e}_1\)
-                \State \textbf{break}
-            \EndIf
-            \Statex
-            \State Solve \(\symbf{H}_{1:m+1,1:m} \symbf{y}_m = \beta \symbf{e}_1\) \Comment{Determine coefficient vector}
-            \State \(\norm*{\symbf{r}^{\left( m \right)}} = \norm*{\beta \symbf{e}_1 - \symbf{H}_{1:m+1,1:m} \symbf{y}_m}\)
-            \If{\(\norm*{\symbf{r}^{\left( m \right)}} \leqslant \mathrm{rtol} \norm*{\symbf{r}^{\left( 0 \right)}} + \mathrm{atol}\)} \Comment{Stopping criterion}
-                \State \textbf{break}
-            \EndIf
+        \State \(\symbf{Q}_{:,m+1} = \symbf{A} \symbf{Q}_{:m}\) \Comment{Gram-Schmidt process to construct \(\symbf{Q}_{1:m,1:m}\) and \(\symbf{H}_{1:m,1:m}\)}
+        \For{\(i = 1,\: \ldots,\: m\)}
+        \State \(\symbf{H}_{im} = \symbf{Q}_{:i}^\top \symbf{Q}_{:,m + 1}\)
+        \State \(\symbf{Q}_{:,m+1} = \symbf{Q}_{:,m+1} - \symbf{H}_{im} \symbf{Q}_{:i}\)
+        \EndFor
+        \State \(\symbf{H}_{m+1,m} = \norm*{\symbf{Q}_{:,m+1}}\)
+        \Statex
+        \If{\(\symbf{H}_{m+1,m} < \mathrm{tol}\)} \Comment{Norm of residual will be close to zero}
+        \State solve \(\symbf{H}_{1:m,1:m} \symbf{y}_m = \beta \symbf{e}_1\)
+        \State \textbf{break}
+        \EndIf
+        \State \(\symbf{Q}_{:,m+1} = \symbf{Q}_{:,m+1} / \symbf{H}_{m+1,m}\)
+        \Statex
+        \State solve \(\symbf{H}_{1:m+1,1:m} \symbf{y}_m = \beta \symbf{e}_1\) \Comment{Determine coefficient vector}
+        \State \(\norm*{\symbf{r}^{\left( m \right)}} = \norm*{\beta \symbf{e}_1 - \symbf{H}_{1:m+1,1:m} \symbf{y}_m}\)
+        \If{\(\norm*{\symbf{r}^{\left( m \right)}} \leqslant \mathrm{rtol} \norm*{\symbf{r}^{\left( 0 \right)}} + \mathrm{atol}\)} \Comment{Stopping criterion}
+        \State \textbf{break}
+        \EndIf
         \EndFor
         \State \textbf{return} \(\symbf{x}^{\left( m \right)} = \symbf{x}^{\left( 0 \right)} + \symbf{Q}_{:,1:m} \symbf{y}_m\)
     \end{algorithmic}
 \end{algorithm}
+\subsection{Preconditioning}
+The convergence of Krylov subspace methods can be improved by
+preconditioning the matrix \(\symbf{A}\) with a matrix \(\symbf{M}\)
+and solving a modified version of the linear system \(\symbf{A}
+\symbf{x} = \symbf{b}\).
+\begin{itemize}
+    \item \textbf{Left Preconditioning}: The matrix \(\symbf{M}^{-1}\) is
+          actioned on the left of \(\symbf{A}\), and the following left
+          preconditioned system is then solved for \(\symbf{x}\):
+          \begin{equation*}
+              \symbf{M}^{-1} \symbf{A} \symbf{x} = \symbf{M}^{-1} \symbf{b}.
+          \end{equation*}
+    \item \textbf{Right Preconditioning}: The matrix \(\symbf{M}\) is
+          actioned on the right of \(\symbf{A}\), and the following right
+          preconditioned system is then solved for \(\symbf{x}\):
+          \begin{equation*}
+              \symbf{A} \symbf{M}^{-1} \tilde{\symbf{x}} = \symbf{b}
+          \end{equation*}
+          where \(\symbf{M} \tilde{\symbf{x}} = \symbf{x}\).
+\end{itemize}
+Here we must choose the preconditioner \(\symbf{M}\) such that \(\symbf{M}^{-1}\)
+is close to \(\symbf{A}^{-1}\) so that the matrix products
+\(\symbf{M}^{-1} \symbf{A}\) and \(\symbf{A} \symbf{M}^{-1}\) are close
+to the identity matrix, which has optimal spectral properties. Additionally,
+we must ensure that computing the inverse of \(\symbf{M}\) is inexpensive.
+Two such options are the Jacobi preconditioner and the
+Gauss-Seidel preconditioner.
+\begin{itemize}
+    \item \textbf{Jacobi Preconditioner}: The Jacobi preconditioner is
+          a diagonal matrix \(\symbf{M}\) with the diagonal entries of \(\symbf{A}\):
+          \begin{equation*}
+              \symbf{M} = \symbf{D}.
+          \end{equation*}
+    \item \textbf{Gauss-Seidel Preconditioner}: The Gauss-Seidel
+          preconditioner is a lower triangular matrix \(\symbf{M}\) with the
+          lower triangular entries of \(\symbf{A}\) (including the diagonal):
+          \begin{equation*}
+              \symbf{M} = \symbf{D} + \symbf{L}.
+          \end{equation*}
+\end{itemize}
+Here \(\symbf{D} = \diag{\left( \symbf{A} \right)}\) and \(\symbf{L}\)
+is the strictly lower triangular part of \(\symbf{A}\).
+\subsubsection{Left Preconditioning}
+When left preconditioning \(\symbf{A}\), we seek an approximate
+solution that is spanned by the Krylov subspace of the preconditioned
+matrix \(\symbf{M}^{-1} \symbf{A}\):
+\begin{equation*}
+    \symbf{x}^{\left( m \right)} \in \symbf{x}^{\left( 0 \right)} + \mathcal{K}_m\left( \symbf{M}^{-1} \symbf{A},\: \tilde{\symbf{r}}^{\left( 0 \right)} \right),
+\end{equation*}
+where \(\tilde{\symbf{r}}^{\left( 0 \right)} = \symbf{M}^{-1} \symbf{r}^{\left( 0 \right)}\).
+Here we will perform Arnoldi's method on the matrix \(\symbf{M}^{-1} \symbf{A}\),
+so that
+\begin{equation*}
+    \left( \symbf{M}^{-1} \symbf{A} \right) \symbf{Q}_m = \symbf{Q}_{m+1} \bar{\symbf{H}}_m
+\end{equation*}
+with \(\symbf{q}_1 = \tilde{\symbf{r}}^{\left( 0 \right)}/\beta\) and
+\(\beta = \norm*{\tilde{\symbf{r}}^{\left( 0 \right)}}\). For both methods,
+we arrive at the same solution for the coefficient vector \(\symbf{y}_m\)
+as in the unpreconditioned case\footnote{See \hyperref[app:sol-left-precond]{Appendix~\ref*{app:sol-left-precond}} for full derivation.}.
+However, the residual norms are now given by\footnote{See \hyperref[app:res-left-precond]{Appendix~\ref*{app:res-left-precond}} for full derivation.}:
+\begin{itemize}
+    \item \textbf{FOM}: \(\norm*{\symbf{r}^{\left( m \right)}} = \norm*{\symbf{M} h_{m+1,m} \symbf{q}_{m+1} \symbf{e}_m^\top \symbf{y}_m}\).
+    \item \textbf{GMRES}: \(\norm*{\symbf{r}^{\left( m \right)}} = \norm*{\symbf{M} h_{m+1,m} \symbf{q}_{m+1} \symbf{e}_m^\top \symbf{y}_m}\).
+\end{itemize}
+We can now modify the algorithms from the previous section to include
+left preconditioning. Notably, \(\beta\) and \(\symbf{Q}_{:,1}\) now
+depend on the preconditioned residual vector, and the next column of
+\(\symbf{Q}\) is computed using the preconditioned matrix
+\(\symbf{M}^{-1} \symbf{A}\). Finally, the stopping criterion for the
+residual norm now uses the results derived above.
+\begin{algorithm}[H]
+    \caption{Full Orthogonalisation Method using Left Preconditioning}
+    \begin{algorithmic}
+        \State \(\symbf{r}^{\left( 0 \right)} = \symbf{b} - \symbf{A} \symbf{x}^{\left( 0 \right)}\)
+        \State solve \(\symbf{M} \tilde{\symbf{r}}^{\left( 0 \right)} = \symbf{r}^{\left( 0 \right)}\) \Comment{Equivalent to \(\tilde{\symbf{r}}^{\left( 0 \right)} = \symbf{M}^{-1} \symbf{r}^{\left( 0 \right)}\)}
+        \State \(\beta = \norm*{\tilde{\symbf{r}}^{\left( 0 \right)}}\)
+        \State \(\symbf{Q}_{:1} = \tilde{\symbf{r}}^{\left( 0 \right)}/\beta\)
+        \For{\(m = 1,\: 2,\: \ldots\)}
+        \State solve \(\symbf{M} \symbf{Q}_{:,m+1} = \symbf{A} \symbf{Q}_{:m}\) \Comment{Equivalent to \(\symbf{Q}_{:,m+1} = \left( \symbf{M}^{-1} \symbf{A} \right) \symbf{Q}_{:,m}\)}
+        \For{\(i = 1,\: \ldots,\: m\)}
+        \State \(\symbf{H}_{im} = \symbf{Q}_{:i}^\top \symbf{Q}_{:,m + 1}\)
+        \State \(\symbf{Q}_{:,m+1} = \symbf{Q}_{:,m+1} - \symbf{H}_{im} \symbf{Q}_{:i}\)
+        \EndFor
+        \State \(\symbf{H}_{m+1,m} = \norm*{\symbf{Q}_{:,m+1}}\)
+        \Statex
+        \If{\(\symbf{H}_{m+1,m} < \mathrm{tol}\)}
+        \State solve \(\symbf{H}_{1:m,1:m} \symbf{y}_m = \beta \symbf{e}_1\)
+        \State \textbf{break}
+        \EndIf
+        \State \(\symbf{Q}_{:,m+1} = \symbf{Q}_{:,m+1} / \symbf{H}_{m+1,m}\)
+        \Statex
+        \State solve \(\symbf{H}_{1:m,1:m} \symbf{y}_m = \beta \symbf{e}_1\)
+        \State \(\norm*{\symbf{r}^{\left( m \right)}} = \norm*{\symbf{M} \symbf{H}_{m+1,m} \symbf{Q}_{:,m+1} \symbf{e}_m^\top \symbf{y}_m}\) \Comment{Residual norm depends on \(\symbf{M}\)}
+        \If{\(\norm*{\symbf{r}^{\left( m \right)}} \leqslant \mathrm{rtol} \norm*{\symbf{r}^{\left( 0 \right)}} + \mathrm{atol}\)}
+        \State \textbf{break}
+        \EndIf
+        \EndFor
+        \State \textbf{return} \(\symbf{x}^{\left( m \right)} = \symbf{x}^{\left( 0 \right)} + \symbf{Q}_{:,1:m} \symbf{y}_m\)
+    \end{algorithmic}
+\end{algorithm}
+\begin{algorithm}[H]
+    \caption{Generalised Minimal Residual Method using Left Preconditioning}
+    \begin{algorithmic}
+        \State \(\symbf{r}^{\left( 0 \right)} = \symbf{b} - \symbf{A} \symbf{x}^{\left( 0 \right)}\)
+        \State solve \(\symbf{M} \tilde{\symbf{r}}^{\left( 0 \right)} = \symbf{r}^{\left( 0 \right)}\) \Comment{Equivalent to \(\tilde{\symbf{r}}^{\left( 0 \right)} = \symbf{M}^{-1} \symbf{r}^{\left( 0 \right)}\)}
+        \State \(\beta = \norm*{\tilde{\symbf{r}}^{\left( 0 \right)}}\)
+        \State \(\symbf{Q}_{:1} = \tilde{\symbf{r}}^{\left( 0 \right)}/\beta\)
+        \For{\(m = 1,\: 2,\: \ldots\)}
+        \State solve \(\symbf{M} \symbf{Q}_{:,m+1} = \symbf{A} \symbf{Q}_{:m}\) \Comment{Equivalent to \(\symbf{Q}_{:,m+1} = \left( \symbf{M}^{-1} \symbf{A} \right) \symbf{Q}_{:,m}\)}
+        \For{\(i = 1,\: \ldots,\: m\)}
+        \State \(\symbf{H}_{im} = \symbf{Q}_{:i}^\top \symbf{Q}_{:,m + 1}\)
+        \State \(\symbf{Q}_{:,m+1} = \symbf{Q}_{:,m+1} - \symbf{H}_{im} \symbf{Q}_{:i}\)
+        \EndFor
+        \State \(\symbf{H}_{m+1,m} = \norm*{\symbf{Q}_{:,m+1}}\)
+        \Statex
+        \If{\(\symbf{H}_{m+1,m} < \mathrm{tol}\)}
+        \State solve \(\symbf{H}_{1:m,1:m} \symbf{y}_m = \beta \symbf{e}_1\)
+        \State \textbf{break}
+        \EndIf
+        \State \(\symbf{Q}_{:,m+1} = \symbf{Q}_{:,m+1} / \symbf{H}_{m+1,m}\)
+        \Statex
+        \State solve \(\symbf{H}_{1:m+1,1:m} \symbf{y}_m = \beta \symbf{e}_1\)
+        \State \(\norm*{\symbf{r}^{\left( m \right)}} = \norm*{\symbf{M} \symbf{Q}_{m+1} \left( \beta \symbf{e}_1 - \bar{\symbf{H}}_m \symbf{y}_m \right)}\) \Comment{Residual norm depends on \(\symbf{M}\)}
+        \If{\(\norm*{\symbf{r}^{\left( m \right)}} \leqslant \mathrm{rtol} \norm*{\symbf{r}^{\left( 0 \right)}} + \mathrm{atol}\)}
+        \State \textbf{break}
+        \EndIf
+        \EndFor
+        \State \textbf{return} \(\symbf{x}^{\left( m \right)} = \symbf{x}^{\left( 0 \right)} + \symbf{Q}_{:,1:m} \symbf{y}_m\)
+    \end{algorithmic}
+\end{algorithm}
+\subsubsection{Right Preconditioning}
+When right preconditioning \(\symbf{A}\), we seek an approximate
+solution that is spanned by the product of the Krylov subspace of the
+preconditioned matrix \(\symbf{A} \symbf{M}^{-1}\) with
+\(\symbf{M}^{-1}\):
+\begin{equation*}
+    \symbf{x}^{\left( m \right)} \in \symbf{x}^{\left( 0 \right)} + \symbf{M}^{-1} \mathcal{K}_m\left( \symbf{A} \symbf{M}^{-1},\: \symbf{r}^{\left( 0 \right)} \right),
+\end{equation*}
+Here we will perform Arnoldi's method on the matrix \(\symbf{A} \symbf{M}^{-1}\),
+so that
+\begin{equation*}
+    \left( \symbf{A} \symbf{M}^{-1} \right) \symbf{Q}_m = \symbf{Q}_{m+1} \bar{\symbf{H}}_m.
+\end{equation*}
+Additionally, the solution for the approximate solution is now of the
+form:
+\begin{equation*}
+    \symbf{x}^{\left( m \right)} = \symbf{x}^{\left( 0 \right)} + \symbf{M}^{-1} \symbf{Q}_m \symbf{y}_m.
+\end{equation*}
+As preconditioning is applied on the right, both the coefficient vector
+and the residual vector are the same for both FOM and GMRES\footnote{See \hyperref[app:sol-right-precond]{Appendix~\ref*{app:sol-right-precond}} and \hyperref[app:res-right-precond]{Appendix~\ref*{app:res-right-precond}} for full derivation.}.
+The approximate solution for each case is given by:
+\begin{itemize}
+    \item \textbf{FOM}: \(\symbf{x}^{\left( m \right)} = \symbf{x}^{\left( 0 \right)} + \beta \symbf{M}^{-1} \symbf{Q}_m \symbf{H}_m^{-1} \symbf{e}_1\).
+    \item \textbf{GMRES}: \(\symbf{x}^{\left( m \right)} = \symbf{x}^{\left( 0 \right)} + \beta \symbf{M}^{-1} \symbf{Q}_m \bar{\symbf{H}}_m^\dagger \symbf{e}_1\).
+\end{itemize}
+Right conditioning then only modifies the computation of the next column
+of \(\symbf{Q}\), and the final solution \(\symbf{x}^{\left( m \right)}\).
+\begin{algorithm}[H]
+    \caption{Full Orthogonalisation Method using Right Preconditioning}
+    \begin{algorithmic}
+        \State \(\symbf{r}^{\left( 0 \right)} = \symbf{b} - \symbf{A} \symbf{x}^{\left( 0 \right)}\)
+        \State \(\beta = \norm*{\symbf{r}^{\left( 0 \right)}}\)
+        \State \(\symbf{Q}_{:1} = \symbf{r}^{\left( 0 \right)}/\beta\)
+        \For{\(m = 1,\: 2,\: \ldots\)}
+        \State \(\symbf{Q}_{:,m+1} = \symbf{A} \symbf{M}^{-1} \symbf{Q}_{:m}\) \Comment{\(\symbf{M}^{-1} \symbf{Q}_{:m}\) is computed using a matrix solver}
+        \For{\(i = 1,\: \ldots,\: m\)}
+        \State \(\symbf{H}_{im} = \symbf{Q}_{:i}^\top \symbf{Q}_{:,m + 1}\)
+        \State \(\symbf{Q}_{:,m+1} = \symbf{Q}_{:,m+1} - \symbf{H}_{im} \symbf{Q}_{:i}\)
+        \EndFor
+        \State \(\symbf{H}_{m+1,m} = \norm*{\symbf{Q}_{:,m+1}}\)
+        \Statex
+        \If{\(\symbf{H}_{m+1,m} < \mathrm{tol}\)}
+        \State solve \(\symbf{H}_{1:m,1:m} \symbf{y}_m = \beta \symbf{e}_1\)
+        \State \textbf{break}
+        \EndIf
+        \State \(\symbf{Q}_{:,m+1} = \symbf{Q}_{:,m+1} / \symbf{H}_{m+1,m}\)
+        \Statex
+        \State solve \(\symbf{H}_{1:m,1:m} \symbf{y}_m = \beta \symbf{e}_1\)
+        \State \(\norm*{\symbf{r}^{\left( m \right)}} = \symbf{H}_{m+1,m} \abs*{\symbf{e}_m^\top \symbf{y}_m}\)
+        \If{\(\norm*{\symbf{r}^{\left( m \right)}} \leqslant \mathrm{rtol} \norm*{\symbf{r}^{\left( 0 \right)}} + \mathrm{atol}\)}
+        \State \textbf{break}
+        \EndIf
+        \EndFor
+        \State \textbf{return} \(\symbf{x}^{\left( m \right)} = \symbf{x}^{\left( 0 \right)} + \symbf{M}^{-1} \symbf{Q}_{:,1:m} \symbf{y}_m\) \Comment{\(\symbf{M}^{-1} \left( \symbf{Q}_{:,1:m} \symbf{y}_m \right)\) is computed using a matrix solver}
+    \end{algorithmic}
+\end{algorithm}
+\begin{algorithm}[H]
+    \caption{Generalised Minimal Residual Method using Right Preconditioning}
+    \begin{algorithmic}
+        \State \(\symbf{r}^{\left( 0 \right)} = \symbf{b} - \symbf{A} \symbf{x}^{\left( 0 \right)}\)
+        \State \(\beta = \norm*{\symbf{r}^{\left( 0 \right)}}\)
+        \State \(\symbf{Q}_{:1} = \symbf{r}^{\left( 0 \right)}/\beta\)
+        \For{\(m = 1,\: 2,\: \ldots\)}
+        \State \(\symbf{Q}_{:,m+1} = \symbf{A} \symbf{M}^{-1} \symbf{Q}_{:m}\) \Comment{\(\symbf{M}^{-1} \symbf{Q}_{:m}\) is computed using a matrix solver}
+        \For{\(i = 1,\: \ldots,\: m\)}
+        \State \(\symbf{H}_{im} = \symbf{Q}_{:i}^\top \symbf{Q}_{:,m + 1}\)
+        \State \(\symbf{Q}_{:,m+1} = \symbf{Q}_{:,m+1} - \symbf{H}_{im} \symbf{Q}_{:i}\)
+        \EndFor
+        \State \(\symbf{H}_{m+1,m} = \norm*{\symbf{Q}_{:,m+1}}\)
+        \Statex
+        \If{\(\symbf{H}_{m+1,m} < \mathrm{tol}\)}
+        \State solve \(\symbf{H}_{1:m,1:m} \symbf{y}_m = \beta \symbf{e}_1\)
+        \State \textbf{break}
+        \EndIf
+        \State \(\symbf{Q}_{:,m+1} = \symbf{Q}_{:,m+1} / \symbf{H}_{m+1,m}\)
+        \Statex
+        \State solve \(\symbf{H}_{1:m+1,1:m} \symbf{y}_m = \beta \symbf{e}_1\)
+        \State \(\norm*{\symbf{r}^{\left( m \right)}} = \norm*{\beta \symbf{e}_1 - \symbf{H}_{1:m+1,1:m} \symbf{y}_m}\)
+        \If{\(\norm*{\symbf{r}^{\left( m \right)}} \leqslant \mathrm{rtol} \norm*{\symbf{r}^{\left( 0 \right)}} + \mathrm{atol}\)}
+        \State \textbf{break}
+        \EndIf
+        \EndFor
+        \State \textbf{return} \(\symbf{x}^{\left( m \right)} = \symbf{x}^{\left( 0 \right)} + \symbf{M}^{-1} \symbf{Q}_{:,1:m} \symbf{y}_m\) \Comment{\(\symbf{M}^{-1} \left( \symbf{Q}_{:,1:m} \symbf{y}_m \right)\) is computed using a matrix solver}
+    \end{algorithmic}
+\end{algorithm}
+\section{Newton-Krylov Methods}
+Newton-Krylov methods are methods for solving nonlinear systems that
+combine Newton's method with Krylov subspace methods to solve the
+linear system at each Newton iteration. During each iteration, the
+Newton step can be computed by solving the linear system:
+\begin{equation*}
+    \symbf{J}\left( \symbf{x}^{\left( k \right)} \right) \symbf{\delta} \symbf{x} = -\symbf{F}\left( \symbf{x} \right)
+\end{equation*}
+using a Krylov subspace method. When performing a Krylov subspace method,
+the computation of \(\symbf{J}\left( \symbf{x}^{\left( k \right)} \right) \symbf{q}_m\)
+is can be approximated using finite differences:
+\begin{equation*}
+    \symbf{J}\left( \symbf{x}^{\left( k \right)} \right) \symbf{q}_m \approx \frac{\symbf{F}\left( \symbf{x}^{\left( k \right)} + \varepsilon \symbf{q}_m \right) - \symbf{F}\left( \symbf{x}^{\left( k \right)} \right)}{\varepsilon}
+\end{equation*}
+where the shift parameter \(\varepsilon\) is chosen as
+\begin{equation*}
+    \varepsilon = \begin{cases}
+        \sqrt{\epsilon_M} \norm*{\symbf{x}^{\left( k \right)}}, & \symbf{x}^{\left( k \right)} \neq 0 \\
+        \sqrt{\epsilon_M}, & \symbf{x}^{\left( k \right)} = 0.
+    \end{cases}
+\end{equation*}
+This solution strategy is known as the \textit{Jacobian-Free Newton-Krylov}
+method and is widely used in several solvers.
+\pagebreak
+\begin{appendix}
+    \section{Appendix}
+    \subsection{Approximate Solution with Left Preconditioning}\label{app:sol-left-precond}
+    For FOM, the subspace of constraints becomes:
+    \begin{equation*}
+        \mathcal{W}_m = \mathcal{K}_m\left( \symbf{M}^{-1} \symbf{A},\: \tilde{\symbf{r}}^{\left( 0 \right)} \right),
+    \end{equation*}
+    and we can solve for the coefficients \(\symbf{y}_m\) by imposing the
+    orthogonality constraint \(\tilde{\symbf{r}}^{\left( m \right)} \perp \mathcal{W}_m\):
+    \begin{align*}
+        \symbf{Q}_m^\top \tilde{\symbf{r}}^{\left( m \right)}                                                                                                          & = \symbf{0}                           \\
+        \symbf{Q}_m^\top \symbf{M}^{-1} \left( \symbf{b} - \symbf{A} \symbf{x}^{\left( m \right)} \right)                                                              & = \symbf{0}                           \\
+        \symbf{Q}_m^\top \symbf{M}^{-1} \left( \symbf{b} - \symbf{A} \left( \symbf{x}^{\left( 0 \right)} + \symbf{Q}_m \symbf{y}_m \right) \right)                     & = \symbf{0}                           \\
+        \symbf{Q}_m^\top \symbf{M}^{-1} \left( \symbf{b} - \symbf{A} \symbf{x}^{\left( 0 \right)} - \symbf{A} \symbf{Q}_m \symbf{y}_m \right)                          & = \symbf{0}                           \\
+        \symbf{Q}_m^\top \symbf{M}^{-1} \left( \symbf{r}^{\left( 0 \right)} - \symbf{A} \symbf{Q}_m \symbf{y}_m \right)                                                & = \symbf{0}                           \\
+        \symbf{Q}_m^\top \symbf{M}^{-1} \symbf{r}^{\left( 0 \right)} - \left( \symbf{Q}_m^\top \left( \symbf{M}^{-1} \symbf{A} \right) \symbf{Q}_m \right) \symbf{y}_m & = \symbf{0}                           \\
+        \beta \symbf{Q}_m^\top \symbf{q}_1 - \symbf{H}_m \symbf{y}_m                                                                                                   & = \symbf{0}                           \\
+        \symbf{H}_m \symbf{y}_m                                                                                                                                        & = \beta \symbf{e}_1                   \\
+        \symbf{y}_m                                                                                                                                                    & = \beta \symbf{H}_m^{-1} \symbf{e}_1.
+    \end{align*}
+    Thus the approximate solution is given by:
+    \begin{equation*}
+        \symbf{x}^{\left( m \right)} = \symbf{x}^{\left( 0 \right)} + \beta \symbf{Q}_m \symbf{H}_m^{-1} \symbf{e}_1.
+    \end{equation*}
+    This is precisely the same as the solution for the unpreconditioned
+    system. Similarly, for GMRES, the subspace of constraints becomes:
+    \begin{equation*}
+        \mathcal{W}_m = \left( \symbf{M}^{-1} \symbf{A} \right) \mathcal{K}_m\left( \symbf{M}^{-1} \symbf{A},\: \tilde{\symbf{r}}^{\left( 0 \right)} \right),
+    \end{equation*}
+    and we can solve for the coefficients \(\symbf{y}_m\) by imposing the
+    orthogonality constraint \(\tilde{\symbf{r}}^{\left( m \right)} \perp \mathcal{W}_m\):
+    \begin{align*}
+        \left( \symbf{A} \symbf{Q}_m \right)^\top \tilde{\symbf{r}}^{\left( m \right)}                                                                                                     & = \symbf{0}                                                                                             \\
+        \left( \symbf{A} \symbf{Q}_m \right)^\top \symbf{M}^{-1} \left( \symbf{b} - \symbf{A} \symbf{x}^{\left( m \right)} \right)                                                         & = \symbf{0}                                                                                             \\
+        \left( \symbf{A} \symbf{Q}_m \right)^\top \symbf{M}^{-1} \left( \symbf{b} - \symbf{A} \left( \symbf{x}^{\left( 0 \right)} + \symbf{Q}_m \symbf{y}_m \right) \right)                & = \symbf{0}                                                                                             \\
+        \left( \symbf{A} \symbf{Q}_m \right)^\top \symbf{M}^{-1} \left( \symbf{b} - \symbf{A} \symbf{x}^{\left( 0 \right)} - \symbf{A} \symbf{Q}_m \symbf{y}_m \right)                     & = \symbf{0}                                                                                             \\
+        \left( \symbf{Q}_{m+1} \bar{\symbf{H}}_m \right)^\top \left( \symbf{M}^{-1} \symbf{r}^{\left( 0 \right)} - \left( \symbf{M}^{-1} \symbf{A} \right) \symbf{Q}_m \symbf{y}_m \right) & = \symbf{0}                                                                                             \\
+        \left( \symbf{Q}_{m+1} \bar{\symbf{H}}_m \right)^\top \left( \tilde{\symbf{r}}^{\left( 0 \right)} - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m \right)                          & = \symbf{0}                                                                                             \\
+        \bar{\symbf{H}}_m^\top \symbf{Q}_{m+1}^\top \left( \beta \symbf{q}_1 - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m \right)                                                       & = \symbf{0}                                                                                             \\
+        \beta \bar{\symbf{H}}_m^\top \symbf{Q}_{m+1}^\top \symbf{q}_1 - \bar{\symbf{H}}_m^\top \symbf{Q}_{m+1}^\top \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m                          & = \symbf{0}                                                                                             \\
+        \beta \bar{\symbf{H}}_m^\top \symbf{Q}_{m+1}^\top \symbf{q}_1 - \bar{\symbf{H}}_m^\top \bar{\symbf{H}}_m \symbf{y}_m                                                               & = \symbf{0}                                                                                             \\
+        \bar{\symbf{H}}_m^\top \bar{\symbf{H}}_m \symbf{y}_m                                                                                                                               & = \beta \bar{\symbf{H}}_m^\top \symbf{e}_1                                                              \\
+        \symbf{y}_m                                                                                                                                                                        & = \beta \left( \bar{\symbf{H}}_m^\top \bar{\symbf{H}}_m \right)^{-1} \bar{\symbf{H}}_m^\top \symbf{e}_1 \\
+        \symbf{y}_m                                                                                                                                                                        & = \beta \bar{\symbf{H}}_m^\dagger \symbf{e}_1.
+    \end{align*}
+    Thus the approximate solution is given by:
+    \begin{equation*}
+        \symbf{x}^{\left( m \right)} = \symbf{x}^{\left( 0 \right)} + \beta \symbf{Q}_m \bar{\symbf{H}}_m^\dagger \symbf{e}_1,
+    \end{equation*}
+    which is again the same as the solution for the unpreconditioned system.
+    \subsection{Residual Norm with Left Preconditioning}\label{app:res-left-precond}
+    The residual norm for a left preconditioned system using FOM can be
+    computed as:
+    \begin{align*}
+        \norm*{\symbf{r}^{\left( m \right)}} & = \norm*{\symbf{M} \tilde{\symbf{r}}^{\left( m \right)}}                                                                                                                               \\
+                                             & = \norm*{\symbf{M} \symbf{M}^{-1} \left( \symbf{b} - \symbf{A} \left( \symbf{x}^{\left( 0 \right)} + \symbf{Q}_m \symbf{y}_m \right) \right)}                                          \\
+                                             & = \norm*{\symbf{M} \symbf{M}^{-1} \left( \symbf{b} - \symbf{A} \symbf{x}^{\left( 0 \right)} - \symbf{A} \symbf{Q}_m \symbf{y}_m \right)}                                               \\
+                                             & = \norm*{\symbf{M} \left( \symbf{M}^{-1} \symbf{r}^{\left( 0 \right)} - \left( \symbf{M}^{-1} \symbf{A} \right) \symbf{Q}_m \symbf{y}_m \right)}                                       \\
+                                             & = \norm*{\symbf{M} \left( \tilde{\symbf{r}}^{\left( 0 \right)} - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m \right)}                                                                \\
+                                             & = \norm*{\symbf{M} \left( \symbf{Q}_m \symbf{Q}_m^\top \tilde{\symbf{r}}^{\left( 0 \right)} - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m \right)}                                   \\
+                                             & = \norm*{\symbf{M} \left( \beta \symbf{Q}_m \symbf{Q}_m^\top \symbf{q}_1 - \left( \symbf{Q}_m \symbf{H}_m + h_{m+1,m} \symbf{q}_{m+1} \symbf{e}_m^\top \right) \symbf{y}_m \right)}    \\
+                                             & = \norm*{\symbf{M} \left( \beta \symbf{Q}_m \symbf{e}_1 - \symbf{Q}_m \symbf{H}_m \symbf{y}_m - h_{m+1,m} \symbf{q}_{m+1} \symbf{e}_m^\top \symbf{y}_m \right)}                        \\
+                                             & = \norm*{\symbf{M} \left( \beta \symbf{Q}_m \symbf{e}_1 - \beta \symbf{Q}_m \symbf{H}_m \symbf{H}_m^{-1} \symbf{e}_1 - h_{m+1,m} \symbf{q}_{m+1} \symbf{e}_m^\top \symbf{y}_m \right)} \\
+                                             & = \norm*{\symbf{M} \left( - h_{m+1,m} \symbf{q}_{m+1} \symbf{e}_m^\top \symbf{y}_m \right)}                                                                                            \\
+                                             & = \norm*{\symbf{M} h_{m+1,m} \symbf{q}_{m+1} \symbf{e}_m^\top \symbf{y}_m}.
+    \end{align*}
+    Similarly, for GMRES:
+    \begin{align*}
+        \norm*{\symbf{r}^{\left( m \right)}} & = \norm*{\symbf{M} \tilde{\symbf{r}}^{\left( m \right)}}                                                                                                     \\
+                                             & = \norm*{\symbf{M} \symbf{M}^{-1} \left( \symbf{b} - \symbf{A} \symbf{x}^{\left( m \right)} \right)}                                                         \\
+                                             & = \norm*{\symbf{M} \symbf{M}^{-1} \left( \symbf{b} - \symbf{A} \left( \symbf{x}^{\left( 0 \right)} + \symbf{Q}_m \symbf{y}_m \right) \right)}                \\
+                                             & = \norm*{\symbf{M} \symbf{M}^{-1} \left( \symbf{b} - \symbf{A} \symbf{x}^{\left( 0 \right)} - \symbf{A} \symbf{Q}_m \symbf{y}_m \right)}                     \\
+                                             & = \norm*{\symbf{M} \left( \symbf{M}^{-1} \symbf{r}^{\left( 0 \right)} - \left( \symbf{M}^{-1} \symbf{A} \right) \symbf{Q}_m \symbf{y}_m \right)}             \\
+                                             & = \norm*{\symbf{M} \left( \tilde{\symbf{r}}^{\left( 0 \right)} - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m \right)}                                      \\
+                                             & = \norm*{\symbf{M} \left( \symbf{Q}_{m+1} \symbf{Q}_{m+1}^\top \tilde{\symbf{r}}^{\left( 0 \right)} - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m \right)} \\
+                                             & = \norm*{\symbf{M} \left( \beta \symbf{Q}_{m+1} \symbf{Q}_{m+1}^\top \symbf{q}_1 - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m \right)}                    \\
+                                             & = \norm*{\symbf{M} \left( \beta \symbf{Q}_{m+1} \symbf{e}_1 - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m \right)}                                         \\
+                                             & = \norm*{\symbf{M} \symbf{Q}_{m+1} \left( \beta \symbf{e}_1 - \bar{\symbf{H}}_m \symbf{y}_m \right)}.
+    \end{align*}
+    \subsection{Approximate Solution with Right Preconditioning}\label{app:sol-right-precond}
+    For FOM, the subspace of constraints becomes:
+    \begin{equation*}
+        \mathcal{W}_m = \mathcal{K}_m\left( \symbf{A} \symbf{M}^{-1},\: \symbf{r}^{\left( 0 \right)} \right),
+    \end{equation*}
+    and we can solve for the coefficients \(\symbf{y}_m\) by imposing the
+    orthogonality constraint \(\symbf{r}^{\left( m \right)} \perp \mathcal{W}_m\):
+    \begin{align*}
+        \symbf{Q}_m^\top \symbf{r}^{\left( m \right)}                                                                                                        & = \symbf{0}                           \\
+        \symbf{Q}_m^\top \left( \symbf{b} - \symbf{A} \symbf{x}^{\left( m \right)} \right)                                                                   & = \symbf{0}                           \\
+        \symbf{Q}_m^\top \left( \symbf{b} - \symbf{A} \left( \symbf{x}^{\left( 0 \right)} + \symbf{M}^{-1} \symbf{Q}_m \symbf{y}_m \right) \right)           & = \symbf{0}                           \\
+        \symbf{Q}_m^\top \left( \symbf{b} - \symbf{A} \symbf{x}^{\left( 0 \right)} - \left( \symbf{A} \symbf{M}^{-1} \right) \symbf{Q}_m \symbf{y}_m \right) & = \symbf{0}                           \\
+        \symbf{Q}_m^\top \left( \symbf{r}^{\left( 0 \right)} - \symbf{A} \symbf{Q}_m \symbf{y}_m \right)                                                     & = \symbf{0}                           \\
+        \symbf{Q}_m^\top \symbf{r}^{\left( 0 \right)} - \left( \symbf{Q}_m^\top \symbf{A} \symbf{Q}_m \right) \symbf{y}_m                                    & = \symbf{0}                           \\
+        \beta \symbf{Q}_m^\top \symbf{q}_1 - \symbf{H}_m \symbf{y}_m                                                                                         & = \symbf{0}                           \\
+        \symbf{H}_m \symbf{y}_m                                                                                                                              & = \beta \symbf{e}_1                   \\
+        \symbf{y}_m                                                                                                                                          & = \beta \symbf{H}_m^{-1} \symbf{e}_1.
+    \end{align*}
+    Thus the approximate solution is given by:
+    \begin{equation*}
+        \symbf{x}^{\left( m \right)} = \symbf{x}^{\left( 0 \right)} + \beta \symbf{M}^{-1} \symbf{Q}_m \symbf{H}_m^{-1} \symbf{e}_1.
+    \end{equation*}
+    This is precisely the same as the solution for the unpreconditioned
+    system. Similarly, for GMRES, the subspace of constraints becomes:
+    \begin{equation*}
+        \mathcal{W}_m = \left( \symbf{A} \symbf{M}^{-1} \right) \mathcal{K}_m\left( \symbf{A} \symbf{M}^{-1},\: \symbf{r}^{\left( 0 \right)} \right),
+    \end{equation*}
+    and we can solve for the coefficients \(\symbf{y}_m\) by imposing the
+    orthogonality constraint \(\symbf{r}^{\left( m \right)} \perp \mathcal{W}_m\):
+    \begin{align*}
+        \left( \left( \symbf{A} \symbf{M}^{-1} \right) \symbf{Q}_m \right)^\top \symbf{r}^{\left( m \right)}                                                                                                        & = \symbf{0}                                                                                             \\
+        \left( \left( \symbf{A} \symbf{M}^{-1} \right) \symbf{Q}_m \right)^\top \left( \symbf{b} - \symbf{A} \symbf{x}^{\left( m \right)} \right)                                                                   & = \symbf{0}                                                                                             \\
+        \left( \left( \symbf{A} \symbf{M}^{-1} \right) \symbf{Q}_m \right)^\top \left( \symbf{b} - \symbf{A} \left( \symbf{x}^{\left( 0 \right)} + \symbf{M}^{-1} \symbf{Q}_m \symbf{y}_m \right) \right)           & = \symbf{0}                                                                                             \\
+        \left( \left( \symbf{A} \symbf{M}^{-1} \right) \symbf{Q}_m \right)^\top \left( \symbf{b} - \symbf{A} \symbf{x}^{\left( 0 \right)} - \left( \symbf{A} \symbf{M}^{-1} \right) \symbf{Q}_m \symbf{y}_m \right) & = \symbf{0}                                                                                             \\
+        \left( \symbf{Q}_{m+1} \bar{\symbf{H}}_m \right)^\top \left( \symbf{r}^{\left( 0 \right)} - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m \right)                                                           & = \symbf{0}                                                                                             \\
+        \bar{\symbf{H}}_m^\top \symbf{Q}_{m+1}^\top \left( \beta \symbf{q}_1 - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m \right)                                                                                & = \symbf{0}                                                                                             \\
+        \beta \bar{\symbf{H}}_m^\top \symbf{Q}_{m+1}^\top \symbf{q}_1 - \bar{\symbf{H}}_m^\top \symbf{Q}_{m+1}^\top \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m                                                   & = \symbf{0}                                                                                             \\
+        \beta \bar{\symbf{H}}_m^\top \symbf{Q}_{m+1}^\top \symbf{q}_1 - \bar{\symbf{H}}_m^\top \bar{\symbf{H}}_m \symbf{y}_m                                                                                        & = \symbf{0}                                                                                             \\
+        \bar{\symbf{H}}_m^\top \bar{\symbf{H}}_m \symbf{y}_m                                                                                                                                                        & = \beta \bar{\symbf{H}}_m^\top \symbf{e}_1                                                              \\
+        \symbf{y}_m                                                                                                                                                                                                 & = \beta \left( \bar{\symbf{H}}_m^\top \bar{\symbf{H}}_m \right)^{-1} \bar{\symbf{H}}_m^\top \symbf{e}_1 \\
+        \symbf{y}_m                                                                                                                                                                                                 & = \beta \bar{\symbf{H}}_m^\dagger \symbf{e}_1.
+    \end{align*}
+    Thus the approximate solution is given by:
+    \begin{equation*}
+        \symbf{x}^{\left( m \right)} = \symbf{x}^{\left( 0 \right)} + \beta \symbf{M}^{-1} \symbf{Q}_m \bar{\symbf{H}}_m^\dagger \symbf{e}_1,
+    \end{equation*}
+    which is again the same as the solution for the unpreconditioned system.
+    \subsection{Residual Norm with Right Preconditioning}\label{app:res-right-precond}
+    The residual norm for a right preconditioned system using FOM can be
+    computed as:
+    \begin{align*}
+        \norm*{\symbf{r}^{\left( m \right)}} & = \norm*{\symbf{b} - \symbf{A} \symbf{x}^{\left( m \right)}}                                                                                                  \\
+                                             & = \norm*{\symbf{b} - \symbf{A} \left( \symbf{x}^{\left( 0 \right)} + \symbf{M}^{-1} \symbf{Q}_m \symbf{y}_m \right)}                                          \\
+                                             & = \norm*{\symbf{b} - \symbf{A} \symbf{x}^{\left( 0 \right)} - \left( \symbf{M}^{-1} \symbf{A} \right) \symbf{Q}_m \symbf{y}_m}                                \\
+                                             & = \norm*{\symbf{r}^{\left( 0 \right)} - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m}                                                                        \\
+                                             & = \norm*{\symbf{Q}_m \symbf{Q}_m^\top \symbf{r}^{\left( 0 \right)} - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m}                                           \\
+                                             & = \norm*{\beta \symbf{Q}_m \symbf{Q}_m^\top \symbf{q}_1 - \left( \symbf{Q}_m \symbf{H}_m + h_{m+1,m} \symbf{q}_{m+1} \symbf{e}_m^\top \right) \symbf{y}_m}    \\
+                                             & = \norm*{\beta \symbf{Q}_m \symbf{e}_1 - \symbf{Q}_m \symbf{H}_m \symbf{y}_m - h_{m+1,m} \symbf{q}_{m+1} \symbf{e}_m^\top \symbf{y}_m}                        \\
+                                             & = \norm*{\beta \symbf{Q}_m \symbf{e}_1 - \beta \symbf{Q}_m \symbf{H}_m \symbf{H}_m^{-1} \symbf{e}_1 - h_{m+1,m} \symbf{q}_{m+1} \symbf{e}_m^\top \symbf{y}_m} \\
+                                             & = h_{m+1,m} \norm*{\symbf{q}_{m+1} \symbf{e}_m^\top \symbf{y}_m}                                                                                              \\
+                                             & = h_{m+1,m} \abs*{\symbf{e}_m^\top \symbf{y}_m}.
+    \end{align*}
+    Similarly, for GMRES:
+    \begin{align*}
+        \norm*{\symbf{r}^{\left( m \right)}} & = \norm*{\symbf{b} - \symbf{A} \symbf{x}^{\left( m \right)}}                                                                   \\
+                                             & = \norm*{\symbf{b} - \symbf{A} \left( \symbf{x}^{\left( 0 \right)} + \symbf{M}^{-1} \symbf{Q}_m \symbf{y}_m \right)}           \\
+                                             & = \norm*{\symbf{b} - \symbf{A} \symbf{x}^{\left( 0 \right)} - \left( \symbf{A} \symbf{M}^{-1} \right) \symbf{Q}_m \symbf{y}_m} \\
+                                             & = \norm*{\symbf{r}^{\left( 0 \right)} - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m}                                         \\
+                                             & = \norm*{\symbf{Q}_{m+1} \symbf{Q}_{m+1}^\top \symbf{r}^{\left( 0 \right)} - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m}    \\
+                                             & = \norm*{\beta \symbf{Q}_{m+1} \symbf{Q}_{m+1}^\top \symbf{q}_1 - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m}               \\
+                                             & = \norm*{\beta \symbf{Q}_{m+1} \symbf{e}_1 - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m}                                    \\
+                                             & = \norm*{\symbf{Q}_{m+1} \left( \beta \symbf{e}_1 - \bar{\symbf{H}}_m \symbf{y}_m \right)}                                     \\
+                                             & = \norm*{\beta \symbf{e}_1 - \bar{\symbf{H}}_m \symbf{y}_m}.
+    \end{align*}
+\end{appendix}
 \end{document}
