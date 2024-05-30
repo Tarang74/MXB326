@@ -1294,7 +1294,7 @@ In particular, we will explore the case where \(\symbf{A}\) is large and
 sparse, as is the case for the linear systems we have seen thus far. In
 the following sections, we will discuss some iterative methods that
 outperform traditional matrix decomposition methods, for large \(n\).
-\section{Krylov Subspace}
+\section{Krylov Subspaces}
 Let \(\symbf{A} \in \R^{n \times n}\) and \(\symbf{b} \in \R^n\).
 Krylov subpace methods seek to find an approximate solution to
 \begin{equation*}
@@ -1475,32 +1475,21 @@ decomposition, where we can build the matrix \(\bar{\symbf{H}}_m\) using:
     h_{ij} = \symbf{q}_i^\top \symbf{A} \symbf{q}_j, \quad h_{j+1,j} = \norm*{\symbf{v}_{j+1}}.
 \end{equation*}
 This shows us a recurrence relationship between \(\symbf{H}_m\) and
-\(\bar{\symbf{H}}_m\):
+\(\bar{\symbf{H}}_m\),
 \begin{align*}
     \bar{\symbf{H}}_1 & =
     \begin{bmatrix}
         \symbf{q}_1^\top \symbf{A} \symbf{q}_1 \\
         \norm*{\symbf{v}_2}
     \end{bmatrix}
-    =
-    \begin{bmatrix}
-        \symbf{q}_1^\top \symbf{A} \symbf{q}_1
-    \end{bmatrix}
-    + \norm*{\symbf{v}_2} \symbf{e}_1^\top
-    = \symbf{H}_1 + \norm*{\symbf{v}_2} \symbf{e}_1^\top \\
+    \\
     \bar{\symbf{H}}_2 & =
     \begin{bmatrix}
         \symbf{q}_1^\top \symbf{A} \symbf{q}_1 & \symbf{q}_1^\top \symbf{A} \symbf{q}_2 \\
         \norm*{\symbf{v}_2}                    & \symbf{q}_2^\top \symbf{A} \symbf{q}_2 \\
                                                & \norm*{\symbf{v}_3}
     \end{bmatrix}
-    =
-    \begin{bmatrix}
-        \symbf{q}_1^\top \symbf{A} \symbf{q}_1 & \symbf{q}_1^\top \symbf{A} \symbf{q}_2 \\
-        \norm*{\symbf{v}_2}                    & \symbf{q}_2^\top \symbf{A} \symbf{q}_2 \\
-    \end{bmatrix}
-    + \norm*{\symbf{v}_3} \symbf{e}_2^\top
-    = \symbf{H}_2 + \norm*{\symbf{v}_3} \symbf{e}_2^\top \\
+    \\
     \bar{\symbf{H}}_3 & =
     \begin{bmatrix}
         \symbf{q}_1^\top \symbf{A} \symbf{q}_1 & \symbf{q}_1^\top \symbf{A} \symbf{q}_2 & \symbf{q}_1^\top \symbf{A} \symbf{q}_3 \\
@@ -1508,27 +1497,58 @@ This shows us a recurrence relationship between \(\symbf{H}_m\) and
                                                & \norm*{\symbf{v}_3}                    & \symbf{q}_3^\top \symbf{A} \symbf{q}_3 \\
                                                &                                        & \norm*{\symbf{v}_4}
     \end{bmatrix}
-    =
+    \\
+                      & \vdotswithin{=}
+\end{align*}
+so that:
+\begin{equation*}
+    \bar{\symbf{H}}_m =
+    \begin{bmatrix}
+        \symbf{H}_m \\
+        h_{m+1,m} \symbf{e}_m^\top
+    \end{bmatrix}
+    .
+\end{equation*}
+If we left-multiply by the orthogonal matrix \(\symbf{Q}_m\):
+\begin{align*}
+    \symbf{Q}_2 \bar{\symbf{H}}_1 & =
+    \begin{bmatrix}
+        \vertbar    \\
+        \symbf{q}_1 \\
+        \vertbar
+    \end{bmatrix}
+    \begin{bmatrix}
+        \symbf{q}_1^\top \symbf{A} \symbf{q}_1
+    \end{bmatrix}
+    + \norm*{\symbf{v}_2} \symbf{q}_2 \symbf{e}_1^\top = \symbf{Q}_1 \symbf{H}_1 + \norm*{\symbf{v}_2} \symbf{q}_2 \symbf{e}_1^\top \\
+    \symbf{Q}_3 \bar{\symbf{H}}_2 & =
+    \begin{bmatrix}
+        \vertbar    & \vertbar    \\
+        \symbf{q}_1 & \symbf{q}_2 \\
+        \vertbar    & \vertbar
+    \end{bmatrix}
+    \begin{bmatrix}
+        \symbf{q}_1^\top \symbf{A} \symbf{q}_1 & \symbf{q}_1^\top \symbf{A} \symbf{q}_2 \\
+        \norm*{\symbf{v}_2}                    & \symbf{q}_2^\top \symbf{A} \symbf{q}_2 \\
+    \end{bmatrix}
+    + \norm*{\symbf{v}_3} \symbf{q}_3 \symbf{e}_2^\top = \symbf{Q}_2 \symbf{H}_2 + \norm*{\symbf{v}_3} \symbf{q}_3 \symbf{e}_2^\top \\
+    \symbf{Q}_4 \bar{\symbf{H}}_3 & =
+    \begin{bmatrix}
+        \vertbar    & \vertbar    & \vertbar    \\
+        \symbf{q}_1 & \symbf{q}_2 & \symbf{q}_3 \\
+        \vertbar    & \vertbar    & \vertbar
+    \end{bmatrix}
     \begin{bmatrix}
         \symbf{q}_1^\top \symbf{A} \symbf{q}_1 & \symbf{q}_1^\top \symbf{A} \symbf{q}_2 & \symbf{q}_1^\top \symbf{A} \symbf{q}_3 \\
         \norm*{\symbf{v}_2}                    & \symbf{q}_2^\top \symbf{A} \symbf{q}_2 & \symbf{q}_2^\top \symbf{A} \symbf{q}_3 \\
                                                & \norm*{\symbf{v}_3}                    & \symbf{q}_3^\top \symbf{A} \symbf{q}_3 \\
     \end{bmatrix}
-    + \norm*{\symbf{v}_4} \symbf{e}_3^\top
-    = \symbf{H}_3 + \norm*{\symbf{v}_4} \symbf{e}_3^\top \\
-                      & \vdotswithin{=}
+    + \norm*{\symbf{v}_4} \symbf{q}_4 \symbf{e}_3^\top = \symbf{Q}_3 \symbf{H}_3 + \norm*{\symbf{v}_4} \symbf{q}_4 \symbf{e}_3^\top \\
+                                  & \vdotswithin{=}
 \end{align*}
-where
+we find
 \begin{equation*}
-    \bar{\symbf{H}}_m = \symbf{H}_m + h_{m+1,m} \symbf{e}_m^\top
-\end{equation*}
-which we can express in block matrix notation as:
-\begin{equation*}
-    \bar{\symbf{H}}_m =
-    \begin{bmatrix}
-        \symbf{H}_m \\
-        h_{m+1,m} \symbf{e}_m^\top.
-    \end{bmatrix}
+    \symbf{Q}_{m+1} \bar{\symbf{H}}_m = \symbf{Q}_m \symbf{H}_m + h_{m+1,m} \symbf{q}_{m+1} \symbf{e}_m^\top.
 \end{equation*}
 This allows us to write the Hessenberg factorisation using the Hessenberg
 matrix \(\symbf{H}_m\):
@@ -1565,16 +1585,17 @@ subspace as follows:
     \caption{Arnoldi's Method using the Classical Gram-Schmidt Process}
     \begin{algorithmic}
         \State \(\symbf{Q}_{:1} = \symbf{b}/\norm*{\symbf{b}}\)
-        \For{\(j = 1,\: \ldots,\: m\)}
-            \State \(\symbf{Q}_{:,j+1} = \symbf{A} \symbf{Q}_{:j}\)
-            \For{\(i = 1,\: \ldots,\: j\)}
-                \State \(\symbf{H}_{ij} = \symbf{Q}_{:i}^\top \symbf{A} \symbf{Q}_{:j}\) \Comment{Construct upper triangular entries \(h_{ij}\)}
-                \State \(\symbf{Q}_{:,j+1} = \symbf{Q}_{:,j+1} - \symbf{H}_{ij} \symbf{Q}_{:j}\)
-            \EndFor
-            \State \(\symbf{H}_{j+1,j} = \norm*{\symbf{Q}_{:,j+1}}\) \Comment{Construct sub-diagonal entries \(h_{j+1,j}\)}
-            \If{\(\symbf{H}_{j+1,j} \neq 0\)}
-                \State \(\symbf{Q}_{:,j+1} = \symbf{Q}_{:,j+1} / \symbf{H}_{j+1,j}\) \Comment{Normalise \(\symbf{q}_{j+1}\)}
-            \EndIf
+        \For{\(m = 1,\: 2,\: \ldots\)}
+        \State \(\symbf{Q}_{:,m+1} = \symbf{A} \symbf{Q}_{:m}\)
+        \For{\(i = 1,\: \ldots,\: m\)}
+        \State \(\symbf{H}_{im} = \symbf{Q}_{:i}^\top \symbf{A} \symbf{Q}_{:m}\) \Comment{Construct upper triangular entries \(h_{im}\)}
+        \State \(\symbf{Q}_{:,m+1} = \symbf{Q}_{:,m+1} - \symbf{H}_{im} \symbf{Q}_{:i}\)
+        \EndFor
+        \State \(\symbf{H}_{m+1,m} = \norm*{\symbf{Q}_{:,m+1}}\) \Comment{Construct sub-diagonal entries \(h_{m+1,m}\)}
+        \Statex
+        \If{\(\symbf{H}_{m+1,m} \neq 0\)}
+        \State \(\symbf{Q}_{:,m+1} = \symbf{Q}_{:,m+1} / \symbf{H}_{m+1,m}\) \Comment{Normalise \(\symbf{q}_{m+1}\)}
+        \EndIf
         \EndFor
     \end{algorithmic}
 \end{algorithm}
@@ -1585,19 +1606,206 @@ using the Modified Gram-Schmidt process.
     \caption{Arnoldi's Method using the Modified Gram-Schmidt Process}
     \begin{algorithmic}
         \State \(\symbf{Q}_{:1} = \symbf{b}/\norm*{\symbf{b}}\)
-        \For{\(j = 1,\: \ldots,\: m\)}
-            \State \(\symbf{Q}_{:,j+1} = \symbf{A} \symbf{Q}_{:j}\)
-            \For{\(i = 1,\: \ldots,\: j\)}
-                \State \(\symbf{H}_{ij} = \symbf{Q}_{:i}^\top \symbf{Q}_{:j}\) \Comment{Construct upper triangular entries \(h_{ij}\)}
-                \State \(\symbf{Q}_{:,j+1} = \symbf{Q}_{:,j+1} - \symbf{H}_{ij} \symbf{Q}_{:j}\)
-            \EndFor
-            \State \(\symbf{H}_{j+1,j} = \norm*{\symbf{Q}_{:,j+1}}\) \Comment{Construct sub-diagonal entries \(h_{j+1,j}\)}
-            \If{\(\symbf{H}_{j+1,j} \neq 0\)}
-                \State \(\symbf{Q}_{:,j+1} = \symbf{Q}_{:,j+1} / \symbf{H}_{j+1,j}\) \Comment{Normalise \(\symbf{q}_{j+1}\)}
-            \EndIf
+        \For{\(m = 1,\: 2,\: \ldots\)}
+        \State \(\symbf{Q}_{:,m+1} = \symbf{A} \symbf{Q}_{:m}\)
+        \For{\(i = 1,\: \ldots,\: m\)}
+        \State \(\symbf{H}_{im} = \symbf{Q}_{:i}^\top \symbf{Q}_{:m}\) \Comment{Construct upper triangular entries \(h_{im}\)}
+        \State \(\symbf{Q}_{:,m+1} = \symbf{Q}_{:,m+1} - \symbf{H}_{im} \symbf{Q}_{:i}\)
+        \EndFor
+        \State \(\symbf{H}_{m+1,m} = \norm*{\symbf{Q}_{:,m+1}}\) \Comment{Construct sub-diagonal entries \(h_{m+1,m}\)}
+        \Statex
+        \If{\(\symbf{H}_{m+1,m} \neq 0\)}
+        \State \(\symbf{Q}_{:,m+1} = \symbf{Q}_{:,m+1} / \symbf{H}_{m+1,m}\) \Comment{Normalise \(\symbf{q}_{m+1}\)}
+        \EndIf
         \EndFor
     \end{algorithmic}
 \end{algorithm}
 In this algorithm, we omit the left-multiplication by \(\symbf{A}\) on
 \(\symbf{Q}_{:,j}\), when computing \(h_{ij}\).
+\subsection{Solving Sparse Linear Systems}
+Krylov subspace methods seek to find an approximate solution
+\(\symbf{x}^{\left( m \right)}\) to the linear system \(\symbf{A}
+\symbf{x} = \symbf{b}\) given some initial estimate \(\symbf{x}^{\left(
+0 \right)}\), in the \textit{affine space}\footnote{An affine space is
+a vector space that does not have a fixed origin.}:
+\begin{equation*}
+    \symbf{x}^{\left( m \right)} \in \symbf{x}^{\left( 0 \right)} + \mathcal{K}_m\left( \symbf{A},\: \symbf{r}^{\left( 0 \right)} \right),
+\end{equation*}
+where \(\symbf{r}^{\left( 0 \right)} = \symbf{b} - \symbf{A} \symbf{x}^{\left( 0 \right)} = \beta \symbf{q}_1\)
+is the initial residual vector, where \(\beta = \norm*{\symbf{r}^{\left( 0 \right)}}\).
+This solution can be expressed as a linear combination of the basis
+vectors of the Krylov subspace:
+\begin{equation*}
+    \symbf{x}^{\left( m \right)} = \symbf{x}^{\left( 0 \right)} + \symbf{Q}_m \symbf{y}_m,
+\end{equation*}
+where we wish to find the coefficients \(\symbf{y}_m\). This is done by
+imposing an orthogonality constraint on the residual vector
+\(\symbf{r}^{\left( m \right)} = \symbf{b} - \symbf{A} \symbf{x}^{\left( m \right)}\)
+with the \textit{subspace of constraints} \(\mathcal{W}_m\),
+\begin{equation*}
+    \symbf{r}^{\left( m \right)} \perp \mathcal{W}_m.
+\end{equation*}
+This allows us to iteratively solve the linear system by minimising the
+residual vector \(\symbf{r}^{\left( m \right)}\) for the \(m = 1,\: 2,\: \ldots\)
+dimensional Krylov subspace until the residual vector is sufficiently
+small. As we will see in the following sections, the solution \(\symbf{y}_m\)
+involves solving equations involving the Hessenberg matrix \(\symbf{H}_m\),
+which are much cheaper to compute than the original matrix \(\symbf{A}\).
+\subsubsection{Full Orthogonalisation Method}
+In the Full Orthogonalisation Method (FOM), the subspace of constraints
+\(\mathcal{W}_m\) is spanned by the basis vectors of the Krylov
+subspace \(\mathcal{K}_m\left( \symbf{A},\: \symbf{r}^{\left( 0
+\right)} \right)\):
+\begin{equation*}
+    \mathcal{W}_m = \mathcal{K}_m\left( \symbf{A},\: \symbf{r}^{\left( 0 \right)} \right).
+\end{equation*}
+We can then solve for the coefficients \(\symbf{y}_m\) by imposing the
+orthogonality constraint \(\symbf{r}^{\left( m \right)} \perp \mathcal{W}_m\)
+as follows:
+\begin{align*}
+    \symbf{Q}_m^\top \symbf{r}^{\left( m \right)}                                                                               & = \symbf{0}                           \\
+    \symbf{Q}_m^\top \left( \symbf{b} - \symbf{A} \symbf{x}^{\left( m \right)} \right)                                          & = \symbf{0}                           \\
+    \symbf{Q}_m^\top \left( \symbf{b} - \symbf{A} \left( \symbf{x}^{\left( 0 \right)} + \symbf{Q}_m \symbf{y}_m \right) \right) & = \symbf{0}                           \\
+    \symbf{Q}_m^\top \left( \symbf{b} - \symbf{A} \symbf{x}^{\left( 0 \right)} - \symbf{A} \symbf{Q}_m \symbf{y}_m \right)      & = \symbf{0}                           \\
+    \symbf{Q}_m^\top \left( \symbf{r}^{\left( 0 \right)} - \symbf{A} \symbf{Q}_m \symbf{y}_m \right)                            & = \symbf{0}                           \\
+    \symbf{Q}_m^\top \symbf{r}^{\left( 0 \right)} - \left( \symbf{Q}_m^\top \symbf{A} \symbf{Q}_m \right) \symbf{y}_m           & = \symbf{0}                           \\
+    \beta \symbf{Q}_m^\top \symbf{q}_1 - \symbf{H}_m \symbf{y}_m                                                                & = \symbf{0}                           \\
+    \symbf{H}_m \symbf{y}_m                                                                                                     & = \beta \symbf{e}_1                   \\
+    \symbf{y}_m                                                                                                                 & = \beta \symbf{H}_m^{-1} \symbf{e}_1.
+\end{align*}
+Therefore, at the \(m\)th iteration, the approximate solution is given by:
+\begin{equation*}
+    \symbf{x}^{\left( m \right)} = \symbf{x}^{\left( 0 \right)} + \beta \symbf{Q}_m \symbf{H}_m^{-1} \symbf{e}_1.
+\end{equation*}
+\subsubsection{Generalised Minimal Residual Method}
+In the Generalised Minimal Residual Method (GMRES), the subspace of
+constraints \(\mathcal{W}_m\) is spanned by the basis vectors of the
+Krylov subspace \(\mathcal{K}_m\left( \symbf{A},\: \symbf{r}^{\left( 0
+\right)} \right)\) multiplied by the matrix \(\symbf{A}\):
+\begin{equation*}
+    \mathcal{W}_m = \symbf{A} \mathcal{K}_m\left( \symbf{A},\: \symbf{r}^{\left( 0 \right)} \right).
+\end{equation*}
+We can then solve for the coefficients \(\symbf{y}_m\) by imposing the
+orthogonality constraint \(\symbf{r}^{\left( m \right)} \perp \mathcal{W}_m\)
+as follows:
+\begin{align*}
+    \left( \symbf{A} \symbf{Q}_m \right)^\top \symbf{r}^{\left( m \right)}                                                                                    & = \symbf{0}                                                                                             \\
+    \left( \symbf{A} \symbf{Q}_m \right)^\top \left( \symbf{b} - \symbf{A} \symbf{x}^{\left( m \right)} \right)                                               & = \symbf{0}                                                                                             \\
+    \left( \symbf{A} \symbf{Q}_m \right)^\top \left( \symbf{b} - \symbf{A} \left( \symbf{x}^{\left( 0 \right)} + \symbf{Q}_m \symbf{y}_m \right) \right)      & = \symbf{0}                                                                                             \\
+    \left( \symbf{A} \symbf{Q}_m \right)^\top \left( \symbf{b} - \symbf{A} \symbf{x}^{\left( 0 \right)} - \symbf{A} \symbf{Q}_m \symbf{y}_m \right)           & = \symbf{0}                                                                                             \\
+    \left( \symbf{Q}_{m+1} \bar{\symbf{H}}_m \right)^\top \left( \symbf{r}^{\left( 0 \right)} - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m \right)         & = \symbf{0}                                                                                             \\
+    \bar{\symbf{H}}_m^\top \symbf{Q}_{m+1}^\top \left( \beta \symbf{q}_1 - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m \right)                              & = \symbf{0}                                                                                             \\
+    \beta \bar{\symbf{H}}_m^\top \symbf{Q}_{m+1}^\top \symbf{q}_1 - \bar{\symbf{H}}_m^\top \symbf{Q}_{m+1}^\top \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m & = \symbf{0}                                                                                             \\
+    \beta \bar{\symbf{H}}_m^\top \symbf{Q}_{m+1}^\top \symbf{q}_1 - \bar{\symbf{H}}_m^\top \bar{\symbf{H}}_m \symbf{y}_m                                      & = \symbf{0}                                                                                             \\
+    \bar{\symbf{H}}_m^\top \bar{\symbf{H}}_m \symbf{y}_m                                                                                                      & = \beta \bar{\symbf{H}}_m^\top \symbf{e}_1                                                              \\
+    \symbf{y}_m                                                                                                                                               & = \beta \left( \bar{\symbf{H}}_m^\top \bar{\symbf{H}}_m \right)^{-1} \bar{\symbf{H}}_m^\top \symbf{e}_1 \\
+    \symbf{y}_m                                                                                                                                               & = \beta \bar{\symbf{H}}_m^\dagger \symbf{e}_1.
+\end{align*}
+Therefore, at the \(m\)th iteration, the approximate solution is given by:
+\begin{equation*}
+    \symbf{x}^{\left( m \right)} = \symbf{x}^{\left( 0 \right)} + \beta \symbf{Q}_m \bar{\symbf{H}}_m^{-1} \symbf{e}_1.
+\end{equation*}
+\subsubsection{Residual Norms of Krylov Subspace Methods}
+When applying Krylov subspace methods to solve linear systems, the
+stopping criterion is often based on the norm of the residual vector,
+where iterations are stopped until:
+\begin{equation*}
+    \norm*{\symbf{r}^{\left( m \right)}} \leqslant \mathrm{rtol} \norm*{\symbf{r}^{\left( 0 \right)}} + \mathrm{atol}.
+\end{equation*}
+As we will see below, this norm can be computed without explicitly
+performing the matrix-vector product \(\symbf{A} \symbf{x}^{\left( m \right)}\).
+Let us reformulate the norm of the residual for the Full
+Orthogonalisation Method (FOM):
+\begin{align*}
+    \norm*{\symbf{r}^{\left( m \right)}} & = \norm*{\symbf{b} - \symbf{A} \symbf{x}^{\left( m \right)}}                                                                                                  \\
+                                         & = \norm*{\symbf{b} - \symbf{A} \left( \symbf{x}^{\left( 0 \right)} + \symbf{Q}_m \symbf{y}_m \right)}                                                         \\
+                                         & = \norm*{\symbf{b} - \symbf{A} \symbf{x}^{\left( 0 \right)} - \symbf{A} \symbf{Q}_m \symbf{y}_m}                                                              \\
+                                         & = \norm*{\symbf{r}^{\left( 0 \right)} - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m}                                                                        \\
+                                         & = \norm*{\symbf{Q}_m \symbf{Q}_m^\top \symbf{r}^{\left( 0 \right)} - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m}                                           \\
+                                         & = \norm*{\beta \symbf{Q}_m \symbf{Q}_m^\top \symbf{q}_1 - \left( \symbf{Q}_m \symbf{H}_m + h_{m+1,m} \symbf{q}_{m+1} \symbf{e}_m^\top \right) \symbf{y}_m}    \\
+                                         & = \norm*{\beta \symbf{Q}_m \symbf{e}_1 - \symbf{Q}_m \symbf{H}_m \symbf{y}_m - h_{m+1,m} \symbf{q}_{m+1} \symbf{e}_m^\top \symbf{y}_m}                        \\
+                                         & = \norm*{\beta \symbf{Q}_m \symbf{e}_1 - \beta \symbf{Q}_m \symbf{H}_m \symbf{H}_m^{-1} \symbf{e}_1 - h_{m+1,m} \symbf{q}_{m+1} \symbf{e}_m^\top \symbf{y}_m} \\
+                                         & = h_{m+1,m} \norm*{\symbf{q}_{m+1} \symbf{e}_m^\top \symbf{y}_m}                                                                                              \\
+                                         & = h_{m+1,m} \abs*{\symbf{e}_m^\top \symbf{y}_m}.
+\end{align*}
+Similarly, for the Generalised Minimal Residual Method (GMRES):
+\begin{align*}
+    \norm*{\symbf{r}^{\left( m \right)}} & = \norm*{\symbf{b} - \symbf{A} \symbf{x}^{\left( m \right)}}                                                                \\
+                                         & = \norm*{\symbf{b} - \symbf{A} \left( \symbf{x}^{\left( 0 \right)} + \symbf{Q}_m \symbf{y}_m \right)}                       \\
+                                         & = \norm*{\symbf{b} - \symbf{A} \symbf{x}^{\left( 0 \right)} - \symbf{A} \symbf{Q}_m \symbf{y}_m}                            \\
+                                         & = \norm*{\symbf{r}^{\left( 0 \right)} - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m}                                      \\
+                                         & = \norm*{\symbf{Q}_{m+1} \symbf{Q}_{m+1}^\top \symbf{r}^{\left( 0 \right)} - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m} \\
+                                         & = \norm*{\beta \symbf{Q}_{m+1} \symbf{Q}_{m+1}^\top \symbf{q}_1 - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m}            \\
+                                         & = \norm*{\beta \symbf{Q}_{m+1} \symbf{e}_1 - \symbf{Q}_{m+1} \bar{\symbf{H}}_m \symbf{y}_m}            \\
+                                         & = \norm*{\symbf{Q}_{m+1} \left( \beta \symbf{e}_1 - \bar{\symbf{H}}_m \symbf{y}_m \right)}            \\
+                                         & = \norm*{\beta \symbf{e}_1 - \bar{\symbf{H}}_m \symbf{y}_m}.
+\end{align*}
+In both cases, the norm of the residual vector can be computed using
+the Hessenberg matrix \(\symbf{H}_m\).
+Observe that in the case of GMRES, we arrive precisely at the least
+squares problem for \(\symbf{y}_m\):
+\begin{equation*}
+    \symbf{y}_m = \argmin_{\symbf{y}} \norm*{\beta \symbf{e}_1 - \bar{\symbf{H}}_m \symbf{y}} \implies \symbf{y}_m = \beta \bar{\symbf{H}}_m^\dagger \symbf{e}_1,
+\end{equation*}
+so that the GMRES solution minimises the norm of the residual vector
+over the affine space \(\symbf{x}^{\left( 0 \right)} + \mathcal{K}_m\left( \symbf{A},\: \symbf{r}^{\left( 0 \right)} \right)\).
+\subsubsection{Algorithm}
+Both the Full Orthogonalisation Method (FOM) and the Generalised Minimal
+Residual Method (GMRES) can be implemented using the similar algorithm:
+\begin{algorithm}[H]
+    \caption{Full Orthogonalisation Method}
+    \begin{algorithmic}
+        \State \(\symbf{r}^{\left( 0 \right)} = \symbf{b} - \symbf{A} \symbf{x}^{\left( 0 \right)}\)
+        \State \(\beta = \norm*{\symbf{r}^{\left( 0 \right)}}\)
+        \State \(\symbf{Q}_{:1} = \symbf{r}^{\left( 0 \right)}/\beta\)
+        \For{\(m = 1,\: 2,\: \ldots\)}
+            \State \(\symbf{Q}_{:,m+1} = \symbf{A} \symbf{Q}_{:m}\) \Comment{Gram-Schmidt process to construct \(\symbf{Q}_{1:m,1:m}\) and \(\symbf{H}_{1:m,1:m}\)}
+            \For{\(i = 1,\: \ldots,\: m\)}
+                \State \(\symbf{H}_{im} = \symbf{Q}_{:i}^\top \symbf{A} \symbf{Q}_{:m + 1}\)
+                \State \(\symbf{Q}_{:,m+1} = \symbf{Q}_{:,m+1} - \symbf{H}_{im} \symbf{Q}_{:i}\)
+            \EndFor
+            \State \(\symbf{H}_{m+1,m} = \norm*{\symbf{Q}_{:,m+1}}\)
+            \Statex
+            \If{\(\symbf{H}_{m+1,m} < \mathrm{tol}\)} \Comment{Norm of residual will be close to zero}
+                \State solve \(\symbf{H}_{1:m,1:m} \symbf{y}_m = \beta \symbf{e}_1\)
+                \State \textbf{break}
+            \EndIf
+            \Statex
+            \State Solve \(\symbf{H}_{1:m,1:m} \symbf{y}_m = \beta \symbf{e}_1\) \Comment{Determine coefficient vector}
+            \State \(\norm*{\symbf{r}^{\left( m \right)}} = \symbf{H}_{m+1,m} \abs*{\symbf{e}_m^\top \symbf{y}_m}\)
+            \If{\(\norm*{\symbf{r}^{\left( m \right)}} \leqslant \mathrm{rtol} \norm*{\symbf{r}^{\left( 0 \right)}} + \mathrm{atol}\)} \Comment{Stopping criterion}
+                \State \textbf{break}
+            \EndIf
+        \EndFor
+        \State \textbf{return} \(\symbf{x}^{\left( m \right)} = \symbf{x}^{\left( 0 \right)} + \symbf{Q}_{:,1:m} \symbf{y}_m\)
+    \end{algorithmic}
+\end{algorithm}
+\begin{algorithm}[H]
+    \caption{Generalised Minimal Residual Method}
+    \begin{algorithmic}
+        \State \(\symbf{r}^{\left( 0 \right)} = \symbf{b} - \symbf{A} \symbf{x}^{\left( 0 \right)}\)
+        \State \(\beta = \norm*{\symbf{r}^{\left( 0 \right)}}\)
+        \State \(\symbf{Q}_{:1} = \symbf{r}^{\left( 0 \right)}/\beta\)
+        \For{\(m = 1,\: 2,\: \ldots\)}
+            \State \(\symbf{Q}_{:,m+1} = \symbf{A} \symbf{Q}_{:m}\) \Comment{Gram-Schmidt process to construct \(\symbf{Q}_{1:m,1:m}\) and \(\symbf{H}_{1:m,1:m}\)}
+            \For{\(i = 1,\: \ldots,\: m\)}
+                \State \(\symbf{H}_{im} = \symbf{Q}_{:i}^\top \symbf{A} \symbf{Q}_{:m + 1}\)
+                \State \(\symbf{Q}_{:,m+1} = \symbf{Q}_{:,m+1} - \symbf{H}_{im} \symbf{Q}_{:i}\)
+            \EndFor
+            \State \(\symbf{H}_{m+1,m} = \norm*{\symbf{Q}_{:,m+1}}\)
+            \Statex
+            \If{\(\symbf{H}_{m+1,m} < \mathrm{tol}\)} \Comment{Norm of residual will be close to zero}
+                \State solve \(\symbf{H}_{1:m,1:m} \symbf{y}_m = \beta \symbf{e}_1\)
+                \State \textbf{break}
+            \EndIf
+            \Statex
+            \State Solve \(\symbf{H}_{1:m+1,1:m} \symbf{y}_m = \beta \symbf{e}_1\) \Comment{Determine coefficient vector}
+            \State \(\norm*{\symbf{r}^{\left( m \right)}} = \norm*{\beta \symbf{e}_1 - \symbf{H}_{1:m+1,1:m} \symbf{y}_m}\)
+            \If{\(\norm*{\symbf{r}^{\left( m \right)}} \leqslant \mathrm{rtol} \norm*{\symbf{r}^{\left( 0 \right)}} + \mathrm{atol}\)} \Comment{Stopping criterion}
+                \State \textbf{break}
+            \EndIf
+        \EndFor
+        \State \textbf{return} \(\symbf{x}^{\left( m \right)} = \symbf{x}^{\left( 0 \right)} + \symbf{Q}_{:,1:m} \symbf{y}_m\)
+    \end{algorithmic}
+\end{algorithm}
 \end{document}
