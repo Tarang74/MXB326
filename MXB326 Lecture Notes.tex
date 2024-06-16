@@ -404,7 +404,7 @@ giving us the time-stepping formula
 for two choices of \(\theta_1\) and \(\theta_2\). For convenience, we will
 write this as
 \begin{equation*}
-    \tilde{\symbf{A}} \symbf{u}^{\left( n+1 \right)} = \tilde{\symbf{B}} \symbf{u}^{\left( n \right)} + \tilde{\symbf{b}}.
+    \tilde{\symbf{A}} \symbf{u}^{\left( n+1 \right)} = \tilde{\symbf{B}} \symbf{u}^{\left( n \right)} + \tilde{\symbf{c}} = \tilde{\symbf{b}}.
 \end{equation*}
 Setting \(\theta_1 = \theta_2 = 0\), we obtain the Forward Euler method:
 \begin{equation*}
@@ -425,22 +425,22 @@ and \(\theta_2\) is also possible, and these methods are known as the
 IMEX (Implicit-Explicit) methods.
 \subsection{Dirichlet Boundary Conditions}
 When a problem defines Dirichlet boundary conditions rather than
-Neumann boundary conditions, we must replace the first row of the
-matrix \(\tilde{\symbf{A}}\) with \({\left( 1,\: 0,\: \dots,\: 0
-\right)} \in \R^{1 \times N}\) and the first element of the RHS vector
-\(\tilde{\symbf{b}}\) with the Dirichlet boundary condition to ensure
-that the boundary condition is satisfied.
+Neumann boundary conditions, we must replace the first/last row of the
+matrix \(\tilde{\symbf{A}}\) with \(\symbf{e}_1,\symbf{e}_N \in \R^{1 \times N}\)
+and the first/last element of the RHS vector \(\tilde{\symbf{b}}\) with
+the Dirichlet boundary condition to ensure that the boundary condition
+is satisfied.
 \section{Stability Analysis}
 Consider only the interior rows and columns of the result
 \begin{equation*}
-    \tilde{\symbf{A}} \symbf{u}^{\left( n+1 \right)} = \tilde{\symbf{B}} \symbf{u}^{\left( n \right)} + \tilde{\symbf{b}}
+    \tilde{\symbf{A}} \symbf{u}^{\left( n+1 \right)} = \tilde{\symbf{B}} \symbf{u}^{\left( n \right)} + \tilde{\symbf{c}}
 \end{equation*}
 where \(\symbf{u} \in \R^{N - 2}\), \(\tilde{\symbf{A}} \in \R^{N - 2 \times N - 2}\),
-\(\tilde{\symbf{B}} \in \R^{N - 2 \times N - 2}\), and \(\tilde{\symbf{b}} \in \R^{N - 2}\).
+\(\tilde{\symbf{B}} \in \R^{N - 2 \times N - 2}\), and \(\tilde{\symbf{c}} \in \R^{N - 2}\).
 Then let us assume that \(\tilde{\symbf{A}}\) is invertible, so that we
 can construct the recurrence relation
 \begin{equation*}
-    \symbf{u}^{\left( n+1 \right)} = \tilde{\symbf{A}}^{-1} \tilde{\symbf{B}} \symbf{u}^{\left( n \right)} + \tilde{\symbf{A}}^{-1} \tilde{\symbf{b}}.
+    \symbf{u}^{\left( n+1 \right)} = \tilde{\symbf{A}}^{-1} \tilde{\symbf{B}} \symbf{u}^{\left( n \right)} + \tilde{\symbf{A}}^{-1} \tilde{\symbf{c}}.
 \end{equation*}
 If we consider the homogeneous part of this equation, and let
 \(\symbf{T} = \tilde{\symbf{A}}^{-1} \tilde{\symbf{B}}\), we can
@@ -917,6 +917,14 @@ A sequence of vectors in \(\R^n\) is Cauchy if and only if it converges.
         \symbf{F}\left( \symbf{x} + \symbf{h} \right)                                     & = \symbf{F}\left( \symbf{x} \right) + \int_0^1 \symbf{J}\left( \symbf{x} + t \symbf{h} \right) \symbf{h} \odif{t}.
     \end{align*}
 \end{proof}
+\begin{lemma}
+    Let \(\symbf{F} : D \to \R^{n \times n}\) for some open subset
+    \(D \subset \R^n\), be integrable on
+    \(\ointerval{\symbf{x}}{\symbf{x} + \symbf{h}}\), then
+    \begin{equation*}
+        \norm*{\int_a^b \symbf{F}\left( t \right) \odif{t}} \leqslant \int_a^b \norm*{\symbf{F}\left( t \right)} \odif{t}.
+    \end{equation*}
+\end{lemma}
 \subsection{Lipschitz Continuity}
 \begin{definition}[Lipschitz continuous]
     Let \(D \in \R^n\) and \(\symbf{J} : D \to \R^{n \times n}\).
@@ -1394,7 +1402,7 @@ This gives us the reduced Hessenberg factorisation:
     \symbf{A} \symbf{Q}_m & = \symbf{Q}_{m+1} \bar{\symbf{H}}
 \end{align*}
 where \(\symbf{Q}_m \in \R^{n \times m}\), \(\symbf{Q}_{m+1} \in \R^{n \times m+1}\),
-and \(\bar{\symbf{H}} \in \R^{m+1 \times m}\). Note that the matrix
+and \(\bar{\symbf{H}}_m \in \R^{m+1 \times m}\). Note that the matrix
 \(\bar{\symbf{H}}\) is now no longer Hessenberg. By rearranging for
 \(\symbf{q}_{j+1}\), we find that these vectors are the result of the
 Gram-Schmidt method that constructs \(h_{ij}\) and the orthonormal
@@ -1510,7 +1518,7 @@ so that:
     \end{bmatrix}
     .
 \end{equation*}
-If we left-multiply by the orthogonal matrix \(\symbf{Q}_m\):
+If we left-multiply by the orthogonal matrix \(\symbf{Q}_{m+1}\):
 \begin{align*}
     \symbf{Q}_2 \bar{\symbf{H}}_1 & =
     \begin{bmatrix}
@@ -2050,7 +2058,7 @@ where the shift parameter \(\varepsilon\) is chosen as
 \end{equation*}
 This solution strategy is known as the \textit{Jacobian-Free Newton-Krylov}
 method and is widely used in several solvers.
-\pagebreak
+\newpage
 \begin{appendix}
     \section{Appendix}
     \subsection{Approximate Solution with Left Preconditioning}\label{app:sol-left-precond}
