@@ -713,14 +713,21 @@ At boundary nodes, we can use boundary conditions to approximate
     \pdv{u}{x}\left( w_1,\: t \right) & = \pdv{u}{x}\left( 0,\: t \right) & \pdv{u}{x}\left( e_1,\: t \right) & = \frac{u_2 - u_1}{h_1}           &  & \text{(left boundary)}  \\
     \pdv{u}{x}\left( w_N,\: t \right) & = \frac{u_N - u_{N-1}}{h_{N-1}}   & \pdv{u}{x}\left( e_N,\: t \right) & = \pdv{u}{x}\left( L,\: t \right) &  & \text{(right boundary)}
 \end{align*}
-\subsubsection{Nonlinear Diffusivity}
-If the diffusivity is a nonlinear function of \(u\), then we can use
-the following averaging approximations:
+\subsubsection{Nonlinear Terms}
+If the advection or diffusivity terms are nonlinear functions of \(u\),
+we can weight these terms as
+\begin{align*}
+    v\left( u\left( x_i,\: t \right) \right) & = v\left( u_i \right)                                     &  & \text{(current node)} \\
+    v\left( u\left( w_i,\: t \right) \right) & = \left( 1 - \sigma \right) v\left( u_{i-1} \right) + \sigma v\left( u_i \right) &  & \text{(west node)}    \\
+    v\left( u\left( e_i,\: t \right) \right) & = \left( 1 - \sigma \right) v\left( u_i \right) + \sigma v\left( u_{i+1} \right) &  & \text{(east node)}
+\end{align*}
+for the advection, and
 \begin{align*}
     D\left( u\left( x_i,\: t \right) \right) & = D\left( u_i \right)                                     &  & \text{(current node)} \\
-    D\left( u\left( w_i,\: t \right) \right) & = \frac{D\left( u_{i-1} \right) + D\left( u_i \right)}{2} &  & \text{(west node)}    \\
-    D\left( u\left( e_i,\: t \right) \right) & = \frac{D\left( u_i \right) + D\left( u_{i+1} \right)}{2} &  & \text{(east node)}
+    D\left( u\left( w_i,\: t \right) \right) & = \left( 1 - \sigma \right) D\left( u_{i-1} \right) + \sigma D\left( u_i \right) &  & \text{(west node)}    \\
+    D\left( u\left( e_i,\: t \right) \right) & = \left( 1 - \sigma \right) D\left( u_i \right) + \sigma D\left( u_{i+1} \right) &  & \text{(east node)}
 \end{align*}
+for the diffusivity.
 \subsection{Time Discretisation}
 We can compute \(u_i^{\left( n \right)} = u_i\left( t_n \right) =
 u\left( x_i,\: t_n \right)\) by integrating the above ODE over the time
